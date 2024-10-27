@@ -47,10 +47,31 @@ db.serialize(() => {
     });
 
     // Insert a sample call
-    db.run(`
-        INSERT INTO Calls (customer_name, customer_address, call_type, issue_reported)
-        VALUES ('John Doe', '123 Main St', 'Power Outage', 'No power since 10 PM')
-    `);
+    db.serialize(() => {
+        // Insert example data into Users table
+        db.run(`
+            INSERT INTO Users (name, email, password, role)
+            VALUES ('Alice Smith', 'alice@example.com', 'password123', 'dispatcher'),
+                   ('Bob Johnson', 'bob@example.com', 'securepass456', 'manager'),
+                   ('Charlie Brown', 'charlie@example.com', 'mypassword789', 'dispatcher')
+        `);
+    
+        // Insert example data into Calls table
+        db.run(`
+            INSERT INTO Calls (customer_name, customer_address, call_type, crew_assigned, date_time_called, time_dispatched, time_completed, issue_reported, issue_found, dispatcher_id)
+            VALUES ('John Doe', '123 Main St', 'Power Outage', 'Crew Alpha', '2023-10-25 22:00', '2023-10-25 22:15', '2023-10-25 23:30', 'No power since 10 PM', 'Tripped breaker', 1),
+                   ('Jane Smith', '456 Oak Ave', 'Water Leak', 'Crew Beta', '2023-10-26 08:30', '2023-10-26 09:00', '2023-10-26 10:30', 'Water leaking in basement', 'Burst pipe', 2),
+                   ('Tom Lee', '789 Pine Rd', 'Gas Leak', 'Crew Gamma', '2023-10-27 12:45', '2023-10-27 13:00', '2023-10-27 14:00', 'Smell of gas near stove', 'Loose valve', 1)
+        `);
+    
+        // Insert example data into Crews table
+        db.run(`
+            INSERT INTO Crews (crew_name, crew_contact)
+            VALUES ('Crew Alpha', '555-1234'),
+                   ('Crew Beta', '555-5678'),
+                   ('Crew Gamma', '555-9101')
+        `);
+    });
 
     console.log('Database and tables created successfully with sample data');
 });
