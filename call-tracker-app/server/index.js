@@ -31,6 +31,39 @@ app.get('/api/calls', (req, res) => {
     });
 });
 
+// Get a single call by ID
+app.get('/api/calls/:id', (req, res) => {
+    const sql = 'SELECT * FROM Calls WHERE id = ?';
+    const params = [req.params.id];
+    db.get(sql, params, (err, row) => {
+      if (err) {
+        res.status(400).json({ error: err.message });
+        return;
+      }
+      res.json({ data: row });
+    });
+  });
+
+// Get all calls by call type and date range
+app.get('/api/calls/by-type-and-date', (req, res) => {
+    const { callType, startDate, endDate } = req.query;
+
+    const sql = `
+        SELECT * FROM Calls
+        WHERE call_type = ?
+        AND date_time_called BETWEEN ? AND ?
+    `;
+    const params = [callType, startDate, endDate];
+
+    db.all(sql, params, (err, rows) => {
+        if (err) {
+            res.status(400).json({ error: err.message });
+            return;
+        }
+        res.json({ data: rows });
+    });
+});
+
 // Add a new call
 app.post('/api/calls', (req, res) => {
     const { customer_name, customer_address, call_type, crew_assigned, issue_reported } = req.body;
