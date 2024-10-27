@@ -53,6 +53,67 @@ app.post('/api/calls', (req, res) => {
             });
 });
 
+// Update a call entry by ID
+app.put('/api/calls/:id', (req, res) => {
+    const { id } = req.params;
+    const {
+      caller_name,
+      caller_address,
+      call_type,
+      crew_assigned,
+      time_called,
+      time_sent,
+      time_completed,
+      issue_reported,
+      dispatcher
+    } = req.body;
+  
+    // SQL query to update the call entry
+    const sql = `
+      UPDATE calls 
+      SET caller_name = ?, caller_address = ?, call_type = ?, crew_assigned = ?, 
+          time_called = ?, time_sent = ?, time_completed = ?, 
+          issue_reported = ?, dispatcher = ?
+      WHERE id = ?`;
+  
+    const params = [
+      caller_name, caller_address, call_type, crew_assigned, 
+      time_called, time_sent, time_completed, 
+      issue_reported, dispatcher, id
+    ];
+  
+    db.run(sql, params, function (err) {
+      if (err) {
+        res.status(400).json({ error: err.message });
+        return;
+      }
+      if (this.changes === 0) {
+        res.status(404).json({ error: 'Call not found' });
+      } else {
+        res.json({ message: 'Call entry updated successfully', changes: this.changes });
+      }
+    });
+  });
+
+  app.delete('/api/calls/:id', (req, res) => {
+    const { id } = req.params;
+  
+    // SQL query to delete the call entry
+    const sql = `DELETE FROM calls WHERE id = ?`;
+  
+    db.run(sql, id, function (err) {
+      if (err) {
+        res.status(400).json({ error: err.message });
+        return;
+      }
+      if (this.changes === 0) {
+        res.status(404).json({ error: 'Call not found' });
+      } else {
+        res.json({ message: 'Call entry deleted successfully', changes: this.changes });
+      }
+    });
+  });
+
 // Start the server
 const PORT = 5000;
 app.listen(PORT, () => {
