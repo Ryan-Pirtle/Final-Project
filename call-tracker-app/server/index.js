@@ -15,18 +15,11 @@ const db = new sqlite3.Database('./jpec.sqlite', (err) => {
         console.log("connected to sqlite database");
     }
 });
+/*
 
-// Example API endpoint to fetch calls
-app.get('/api/calls', (req, res) => {
-    db.all('SELECT * FROM calls', [], (err, rows) => {
-        if (err) {
-            res.status(400).json({ error: err.message });
-            return;
-        }
-        res.json({ data: rows });
-    });
-});
+  CALL TABLE SECTION
 
+*/
 // Get all calls
 app.get('/api/calls', (req, res) => {
     db.all('SELECT * FROM Calls', [], (err, rows) => {
@@ -111,6 +104,155 @@ app.put('/api/calls/:id', (req, res) => {
       } else {
         res.json({ message: 'Call entry deleted successfully', changes: this.changes });
       }
+    });
+  });
+
+  /*
+
+  USER TABLE SECTION
+
+  */
+
+  // Create a new user
+app.post('/api/users', (req, res) => {
+    const { name, email, password, role } = req.body;
+    const sql = `INSERT INTO Users (name, email, password, role) VALUES (?, ?, ?, ?)`;
+    const params = [name, email, password, role];
+    
+    db.run(sql, params, function (err) {
+      if (err) {
+        res.status(400).json({ error: err.message });
+        return;
+      }
+      res.status(201).json({ id: this.lastID });
+    });
+  });
+  
+  // Get all users
+  app.get('/api/users', (req, res) => {
+    db.all('SELECT * FROM Users', [], (err, rows) => {
+      if (err) {
+        res.status(400).json({ error: err.message });
+        return;
+      }
+      res.json({ data: rows });
+    });
+  });
+  
+  // Get a single user by ID
+  app.get('/api/users/:id', (req, res) => {
+    const sql = 'SELECT * FROM Users WHERE id = ?';
+    const params = [req.params.id];
+    db.get(sql, params, (err, row) => {
+      if (err) {
+        res.status(400).json({ error: err.message });
+        return;
+      }
+      res.json({ data: row });
+    });
+  });
+  
+  // Update a user by ID
+  app.put('/api/users/:id', (req, res) => {
+    const { name, email, password, role } = req.body;
+    const sql = `UPDATE Users SET name = ?, email = ?, password = ?, role = ? WHERE id = ?`;
+    const params = [name, email, password, role, req.params.id];
+  
+    db.run(sql, params, function (err) {
+      if (err) {
+        res.status(400).json({ error: err.message });
+        return;
+      }
+      res.json({ message: 'User updated successfully', changes: this.changes });
+    });
+  });
+  
+  // Delete a user by ID
+  app.delete('/api/users/:id', (req, res) => {
+    const sql = 'DELETE FROM Users WHERE id = ?';
+    const params = [req.params.id];
+  
+    db.run(sql, params, function (err) {
+      if (err) {
+        res.status(400).json({ error: err.message });
+        return;
+      }
+      res.json({ message: 'User deleted successfully', changes: this.changes });
+    });
+  });
+
+/*
+
+  CREW TABLE SECTION
+
+*/
+
+// Create a new crew
+app.post('/api/crews', (req, res) => {
+    const { crew_name, crew_contact } = req.body;
+    const sql = `INSERT INTO Crews (crew_name, crew_contact) VALUES (?, ?)`;
+    const params = [crew_name, crew_contact];
+    
+    db.run(sql, params, function (err) {
+      if (err) {
+        res.status(400).json({ error: err.message });
+        return;
+      }
+      res.status(201).json({ id: this.lastID });
+    });
+  });
+  
+  // Get all crews
+  app.get('/api/crews', (req, res) => {
+    db.all('SELECT * FROM Crews', [], (err, rows) => {
+      if (err) {
+        res.status(400).json({ error: err.message });
+        return;
+      }
+      res.json({ data: rows });
+    });
+  });
+  
+  // Get a single crew by ID
+  app.get('/api/crews/:id', (req, res) => {
+    const sql = 'SELECT * FROM Crews WHERE id = ?';
+    const params = [req.params.id];
+    
+    db.get(sql, params, (err, row) => {
+      if (err) {
+        res.status(400).json({ error: err.message });
+        return;
+      }
+      res.json({ data: row });
+    });
+  });
+  
+  // Update a crew by ID
+  app.put('/api/crews/:id', (req, res) => {
+    const { crew_name, crew_contact } = req.body;
+    const sql = `UPDATE Crews SET crew_name = ?, crew_contact = ? WHERE id = ?`;
+    const params = [crew_name, crew_contact, req.params.id];
+  
+    db.run(sql, params, function (err) {
+      if (err) {
+        res.status(400).json({ error: err.message });
+        return;
+      }
+      res.json({ message: 'Crew updated successfully', changes: this.changes });
+    });
+  });
+  
+  // Delete a crew by ID
+  app.delete('/api/crews/:id', (req, res) => {
+    const sql = 'DELETE FROM Crews WHERE id = ?';
+    const params = [req.params.id];
+  
+    db.run(sql, params, function (err) {
+      if (err) {
+        res.status(400).json({ error: err.message });
+        return;
+      }
+      res.json({ message: 'Crew deleted successfully', changes: this.changes });
     });
   });
 
