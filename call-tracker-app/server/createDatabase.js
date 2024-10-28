@@ -23,7 +23,7 @@ db.serialize(() => {
             customer_address TEXT NOT NULL,
             call_type TEXT NOT NULL,
             crew_assigned TEXT,
-            date_time_called DATETIME DEFAULT CURRENT_TIMESTAMP,
+            time_called DATETIME DEFAULT CURRENT_TIMESTAMP,
             time_dispatched DATETIME,
             time_completed DATETIME,
             issue_reported TEXT,
@@ -58,7 +58,7 @@ db.serialize(() => {
     
         // Insert example data into Calls table
         db.run(`
-            INSERT INTO Calls (customer_name, customer_address, call_type, crew_assigned, date_time_called, time_dispatched, time_completed, issue_reported, issue_found, dispatcher_id)
+            INSERT INTO Calls (caller_name, caller_address, call_type, crew_assigned, time_called, time_dispatched, time_completed, issue_reported, issue_found, dispatcher_id)
             VALUES ('John Doe', '123 Main St', 'Power Outage', 'Crew Alpha', '2023-10-25 22:00', '2023-10-25 22:15', '2023-10-25 23:30', 'No power since 10 PM', 'Tripped breaker', 1),
                    ('Jane Smith', '456 Oak Ave', 'Water Leak', 'Crew Beta', '2023-10-26 08:30', '2023-10-26 09:00', '2023-10-26 10:30', 'Water leaking in basement', 'Burst pipe', 2),
                    ('Tom Lee', '789 Pine Rd', 'Gas Leak', 'Crew Gamma', '2023-10-27 12:45', '2023-10-27 13:00', '2023-10-27 14:00', 'Smell of gas near stove', 'Loose valve', 1)

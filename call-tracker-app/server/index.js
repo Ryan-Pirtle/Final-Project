@@ -51,7 +51,7 @@ app.get('/api/calls/by-type-and-date', (req, res) => {
     const sql = `
         SELECT * FROM Calls
         WHERE call_type = ?
-        AND date_time_called BETWEEN ? AND ?
+        AND time_called BETWEEN ? AND ?
     `;
     const params = [callType, startDate, endDate];
 
@@ -66,10 +66,10 @@ app.get('/api/calls/by-type-and-date', (req, res) => {
 
 // Add a new call
 app.post('/api/calls', (req, res) => {
-    const { customer_name, customer_address, call_type, crew_assigned, issue_reported } = req.body;
-    db.run(`INSERT INTO Calls (customer_name, customer_address, call_type, crew_assigned, issue_reported) 
+    const { caller_name, caller_address, call_type, crew_assigned, issue_reported } = req.body;
+    db.run(`INSERT INTO Calls (caller_name, caller_address, call_type, crew_assigned, issue_reported) 
             VALUES (?, ?, ?, ?, ?)`,
-            [customer_name, customer_address, call_type, crew_assigned, issue_reported], 
+            [caller_name, caller_address, call_type, crew_assigned, issue_reported], 
             function(err) {
                 if (err) {
                     res.status(400).json({ error: err.message });
@@ -88,24 +88,24 @@ app.put('/api/calls/:id', (req, res) => {
       call_type,
       crew_assigned,
       time_called,
-      time_sent,
+      time_dispatched,
       time_completed,
       issue_reported,
-      dispatcher
+      dispatcher_id
     } = req.body;
   
     // SQL query to update the call entry
     const sql = `
       UPDATE calls 
       SET caller_name = ?, caller_address = ?, call_type = ?, crew_assigned = ?, 
-          time_called = ?, time_sent = ?, time_completed = ?, 
-          issue_reported = ?, dispatcher = ?
+          time_called = ?, time_dispatched = ?, time_completed = ?, 
+          issue_reported = ?, dispatcher_id = ?
       WHERE id = ?`;
   
     const params = [
       caller_name, caller_address, call_type, crew_assigned, 
-      time_called, time_sent, time_completed, 
-      issue_reported, dispatcher, id
+      time_called, time_dispatched, time_completed, 
+      issue_reported, dispatcher_id, id
     ];
   
     db.run(sql, params, function (err) {
