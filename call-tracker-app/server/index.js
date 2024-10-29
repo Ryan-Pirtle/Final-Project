@@ -46,14 +46,14 @@ app.get('/api/calls/:id', (req, res) => {
 
 // Get all calls by call type and date range
 app.get('/api/calls/by-type-and-date', (req, res) => {
-    const { callType, startDate, endDate } = req.query;
+    const { callType, time_dispatched, time_completed } = req.query;
 
     const sql = `
         SELECT * FROM Calls
         WHERE call_type = ?
         AND time_called BETWEEN ? AND ?
     `;
-    const params = [callType, startDate, endDate];
+    const params = [callType, time_dispatched, time_completed];
 
     db.all(sql, params, (err, rows) => {
         if (err) {

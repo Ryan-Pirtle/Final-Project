@@ -19,8 +19,8 @@ db.serialize(() => {
     db.run(`
         CREATE TABLE IF NOT EXISTS Calls (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            customer_name TEXT NOT NULL,
-            customer_address TEXT NOT NULL,
+            caller_name TEXT NOT NULL,
+            caller_address TEXT NOT NULL,
             call_type TEXT NOT NULL,
             crew_assigned TEXT,
             time_called DATETIME DEFAULT CURRENT_TIMESTAMP,
