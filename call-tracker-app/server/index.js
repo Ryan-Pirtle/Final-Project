@@ -2,6 +2,7 @@ const express = require('express');
 const app = express();
 const sqlite3 = require('sqlite3').verbose();
 const cors = require('cors');
+const bodyParser = require("body-parser")
 
 //Middleware
 app.use(cors());
@@ -45,16 +46,17 @@ app.get('/api/calls/:id', (req, res) => {
   });
 
 // Get all calls by call type and date range
-app.get('/api/calls/by-type-and-date', (req, res) => {
+app.get('/api/calls-by-type-and-time', (req, res) => {
     const { callType, time_dispatched, time_completed } = req.query;
 
     const sql = `
         SELECT * FROM Calls
         WHERE call_type = ?
-        AND time_called BETWEEN ? AND ?
+        AND time_dispatched BETWEEN ? AND ?
     `;
-    const params = [callType, time_dispatched, time_completed];
 
+    const params = [callType, time_dispatched, time_completed];
+   
     db.all(sql, params, (err, rows) => {
         if (err) {
             res.status(400).json({ error: err.message });
@@ -62,6 +64,49 @@ app.get('/api/calls/by-type-and-date', (req, res) => {
         }
         res.json({ data: rows });
     });
+});
+//get call by date
+app.get('/api/calls-by-date', (req, res) => {
+  const { time_dispatched, time_completed } = req.query;
+
+  // SQL query to select calls by date range
+  const sql = `
+      SELECT * FROM Calls
+      WHERE time_dispatched BETWEEN ? AND ?
+  `;
+  const params = [time_dispatched, time_completed];
+
+  // Execute the query
+  db.all(sql, params, (err, rows) => {
+      if (err) {
+          console.log(rows, " error");
+          res.status(400).json({ error: err.message }); // Send error response if query fails
+          return;
+      }
+      console.log(rows, " data");
+      res.json({ data: rows }); // Send the retrieved rows as response
+  });
+});
+
+// get call by call_type
+app.get('/api/calls-by-type', (req, res) => {
+  const { callType } = req.query; // Only get callType from query parameters
+
+  // SQL query to select calls by call type
+  const sql = `
+      SELECT * FROM Calls
+      WHERE call_type = ?
+  `;
+  const params = [callType];
+
+  // Execute the query
+  db.all(sql, params, (err, rows) => {  
+      if (err) {
+          res.status(400).json({ error: err.message }); // Send error response if query fails
+          return;
+      }
+      res.json({ data: rows }); // Send the retrieved rows as response
+  });
 });
 
 // Add a new call
