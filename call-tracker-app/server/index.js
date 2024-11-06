@@ -2,7 +2,9 @@ const express = require('express');
 const app = express();
 const sqlite3 = require('sqlite3').verbose();
 const cors = require('cors');
-
+// const db = require('./db');
+const getDb = require('./db'); 
+console.log("index db", getDb);
 // Other Routes
 const authenticationRoutes = require('./authentication')
 
@@ -11,16 +13,15 @@ app.use(cors());
 app.use(express.json()); // This will allow all domains to access the API
 
 // Database setup
-const db = new sqlite3.Database('./jpec.sqlite', (err) => {
-    if(err) {
-        console.error('Error opening database:', err.nessage);
-    }else{
-        console.log("connected to sqlite database");
-    }
-});
-
-// Export db for use in other modules
-module.exports = db;
+// const db = new sqlite3.Database('./jpec.sqlite', (err) => {
+//     if(err) {
+//         console.error('Error opening database:', err.nessage);
+//     }else{
+//         console.log("connected to sqlite database");
+//     }
+// });
+// // Export db for use in other modules
+// module.exports = db;
 
 // Use Other Routes
 app.use('/api/auth', authenticationRoutes); //CHECK TO SEE IF 3 ROUTE IS A PROBLEM WITH THIS
@@ -98,9 +99,10 @@ app.get('/api/calls-by-date', (req, res) => {
 });
 
 // get call by call_type
-app.get('/api/calls-by-type', (req, res) => {
+app.get('/api/calls-by-type', async (req, res) => {
   const { callType } = req.query; // Only get callType from query parameters
-
+try{
+  const db = await getDb();
   // SQL query to select calls by call type
   const sql = `
       SELECT * FROM Calls
@@ -116,6 +118,9 @@ app.get('/api/calls-by-type', (req, res) => {
       }
       res.json({ data: rows }); // Send the retrieved rows as response
   });
+ } catch(err){
+  res.status(500).json({error: 'Database connection error'});
+ }
 });
 
 // Add a new call

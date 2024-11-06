@@ -1,16 +1,16 @@
 const express = require('express');
-const app = express();
+// const app = express();
 const sqlite3 = require('sqlite3').verbose();
 const cors = require('cors');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const db = require('./index');  // Import db from index.js
-
+const db = require('./db'); 
+const router = express.Router();
 
 const JWT_SECRET = 'your_secret_key'; // Replace with an environment variable in production
 
 // Test Route
-app.get('/test', (req, res) => {
+router.get('/test', (req, res) => {
     db.all('select * from calls', [], (err,rows) =>{
         if (err){
             res.status(400).json({ error: err.message });
@@ -20,7 +20,7 @@ app.get('/test', (req, res) => {
     })
 })
 // User Registration 
-app.post('/register', async (req, res) => {
+router.post('/register', async (req, res) => {
     const { name, email, password, role } = req.body;
 
     // Validate role
@@ -44,7 +44,7 @@ app.post('/register', async (req, res) => {
 });
 
 //User Login
-app.post('/login', (req, res) => {
+router.post('/login', (req, res) => {
     const { email, password } = req.body;
 
     // Find user by email
@@ -78,9 +78,9 @@ function authenticateToken(req, res, next) {
 }
 
 // Example protected route
-app.get('/protected', authenticateToken, (req, res) => {
+router.get('/protected', authenticateToken, (req, res) => {
     res.json({ message: `Welcome, your role is ${req.user.role}` });
 });
 
 
-module.exports = app;
+module.exports = router;
