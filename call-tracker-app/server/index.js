@@ -2,11 +2,10 @@ const express = require('express');
 const app = express();
 const sqlite3 = require('sqlite3').verbose();
 const cors = require('cors');
-const bodyParser = require("body-parser")
 
 //Middleware
 app.use(cors());
-app.use(express.json());
+app.use(express.json()); // This will allow all domains to access the API
 
 //Database setup
 const db = new sqlite3.Database('./jpec.sqlite', (err) => {
