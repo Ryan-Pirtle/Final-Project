@@ -4,22 +4,21 @@ const sqlite3 = require('sqlite3').verbose();
 const cors = require('cors');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const db = require('./index');  // Import db from index.js
 
-//Middleware
-app.use(cors());
-app.use(express.json()); // This will allow all domains to access the API
 
-const SECRET = 'your_secret_key'; // Replace with an environment variable in production
+const JWT_SECRET = 'your_secret_key'; // Replace with an environment variable in production
 
-// Connect to existing SQLite database
-const db = new sqlite3.Database('./database.db', sqlite3.OPEN_READWRITE, (err) => {
-    if (err) {
-        console.error('Could not connect to the database:', err.message);
-    } else {
-        console.log('Connected to the existing SQLite database.');
-    }
-});
-
+// Test Route
+app.get('/test', (req, res) => {
+    db.all('select * from calls', [], (err,rows) =>{
+        if (err){
+            res.status(400).json({ error: err.message });
+            return;
+        }
+        res.json({ data: rows});
+    })
+})
 // User Registration 
 app.post('/register', async (req, res) => {
     const { name, email, password, role } = req.body;
@@ -82,3 +81,6 @@ function authenticateToken(req, res, next) {
 app.get('/protected', authenticateToken, (req, res) => {
     res.json({ message: `Welcome, your role is ${req.user.role}` });
 });
+
+
+module.exports = app;

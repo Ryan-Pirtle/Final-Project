@@ -18,8 +18,13 @@ const db = new sqlite3.Database('./jpec.sqlite', (err) => {
         console.log("connected to sqlite database");
     }
 });
+
+// Export db for use in other modules
+module.exports = db;
+
 // Use Other Routes
-app.use('/api/auth', authRoutes); //CHECK TO SEE IF 3 ROUTE IS A PROBLEM WITH THIS
+app.use('/api/auth', authenticationRoutes); //CHECK TO SEE IF 3 ROUTE IS A PROBLEM WITH THIS
+
 /*
 
   CALL TABLE SECTION
