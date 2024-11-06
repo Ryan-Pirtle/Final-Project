@@ -3,11 +3,14 @@ const app = express();
 const sqlite3 = require('sqlite3').verbose();
 const cors = require('cors');
 
-//Middleware
+// Other Routes
+const authenticationRoutes = require('./authentication')
+
+// Middleware
 app.use(cors());
 app.use(express.json()); // This will allow all domains to access the API
 
-//Database setup
+// Database setup
 const db = new sqlite3.Database('./jpec.sqlite', (err) => {
     if(err) {
         console.error('Error opening database:', err.nessage);
@@ -15,6 +18,8 @@ const db = new sqlite3.Database('./jpec.sqlite', (err) => {
         console.log("connected to sqlite database");
     }
 });
+// Use Other Routes
+app.use('/api/auth', authRoutes); //CHECK TO SEE IF 3 ROUTE IS A PROBLEM WITH THIS
 /*
 
   CALL TABLE SECTION
@@ -338,3 +343,6 @@ const PORT = 5000;
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
 });
+
+
+explain how handling the pasword works
