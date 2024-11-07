@@ -3,8 +3,6 @@ const app = express();
 const sqlite3 = require('sqlite3').verbose();
 const cors = require('cors');
 const db = require('./db');
-// const getDb = require('./db'); 
-console.log("index db", db);
 // Other Routes
 const authenticationRoutes = require('./authentication')
 
@@ -12,19 +10,8 @@ const authenticationRoutes = require('./authentication')
 app.use(cors());
 app.use(express.json()); // This will allow all domains to access the API
 
-// Database setup
-// const db = new sqlite3.Database('./jpec.sqlite', (err) => {
-//     if(err) {
-//         console.error('Error opening database:', err.nessage);
-//     }else{
-//         console.log("connected to sqlite database");
-//     }
-// });
-// // Export db for use in other modules
-// module.exports = db;
-
 // Use Other Routes
-app.use('/api-auth', authenticationRoutes); //CHECK TO SEE IF 3 ROUTE IS A PROBLEM WITH THIS
+app.use('/api-auth', authenticationRoutes); //The three route problem still applies for this
 
 /*
 
