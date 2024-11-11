@@ -1,7 +1,6 @@
 const express = require('express');
 // const app = express();
 const sqlite3 = require('sqlite3').verbose();
-const cors = require('cors');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const db = require('./db'); 
@@ -22,10 +21,10 @@ router.get('/test', (req, res) => {
 // User Registration 
 router.post('/register', async (req, res) => {
     const { name, email, password, role } = req.body;
-
+    console.log(role);
     // Validate role
     if (!['dispatcher', 'manager'].includes(role)) {
-        return res.status(400).json({ error: 'Invalid role specified' });
+        return res.status(400).json({ error: 'Invalid role specified', role: typeof role });
     }
 
     // Hash the password

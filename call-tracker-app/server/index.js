@@ -45,7 +45,7 @@ app.get('/api/calls/:id', (req, res) => {
 // Get all calls by call type and date range
 app.get('/api/calls-by-type-and-time', (req, res) => {
     const { callType, time_dispatched, time_completed } = req.query;
-
+    console.log(req.query);
     const sql = `
         SELECT * FROM Calls
         WHERE call_type = ?
@@ -59,11 +59,12 @@ app.get('/api/calls-by-type-and-time', (req, res) => {
             res.status(400).json({ error: err.message });
             return;
         }
+        console.log("rows:",rows);
         res.json({ data: rows });
     });
 });
-//get call by date
-app.get('/api/calls-by-date', (req, res) => {
+//get call by time
+app.get('/api/calls-by-time', (req, res) => {
   const { time_dispatched, time_completed } = req.query;
 
   // SQL query to select calls by date range

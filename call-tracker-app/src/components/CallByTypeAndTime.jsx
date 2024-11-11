@@ -9,11 +9,11 @@ const endDate = '2024-12-31'; // Replace with the desired end date
 const CallsList = () => {
     const [calls, setCalls] = useState([]);
     useEffect(() => {
-        axios.get('http://localhost:5000/api/calls/by-type-and-date', {
+        axios.get('http://localhost:5000/api/calls-by-type-and-time', {
             params: {
                 callType: callType,
-                startDate: startDate,
-                endDate: endDate
+                time_dispatched: startDate,
+                time_completed: endDate
             }
         })
             .then(response => {setCalls(response.data.data)
