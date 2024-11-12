@@ -10,7 +10,7 @@ const JWT_SECRET = 'your_secret_key'; // Replace with an environment variable in
 
 // Test Route
 router.get('/test', (req, res) => {
-    db.all('select * from calls', [], (err,rows) =>{
+    db.all('select * from users', [], (err,rows) =>{
         if (err){
             res.status(400).json({ error: err.message });
             return;
@@ -19,24 +19,21 @@ router.get('/test', (req, res) => {
     })
 })
 // User Registration 
-router.post('/register', async (req, res) => {
+router.post('/register', authenticateToken, async (req, res) => {
     const { name, email, password, role } = req.body;
-    console.log(role);
-    // Validate role
-    if (!['dispatcher', 'manager'].includes(role)) {
-        return res.status(400).json({ error: 'Invalid role specified', role: typeof role });
-    }
+    // console.log("req", req)
+    console.log("req body", req.body);
+    console.log("Role ", role);
 
     // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
-
     // Insert user into the database
     const sql = `INSERT INTO Users (name, email, password, role) VALUES (?, ?, ?, ?)`;
     const params = [name, email, hashedPassword, role];
-
+    console.log("Params ",params );
     db.run(sql, params, function(err) {
         if (err) {
-            return res.status(400).json({ error: 'Email already in use' });
+            return res.status(400).json({ error: 'Email may already be in use', msg: err });
         }
         res.status(201).json({ message: 'User registered successfully', userId: this.lastID });
     });
@@ -45,12 +42,12 @@ router.post('/register', async (req, res) => {
 //User Login
 router.post('/login', (req, res) => {
     const { email, password } = req.body;
-
+    console.log("Req.body", req.body);
     // Find user by email
     const sql = `SELECT * FROM Users WHERE email = ?`;
     db.get(sql, [email], async (err, user) => {
         if (err || !user) {
-            return res.status(400).json({ error: 'Invalid email or password' });
+            return res.status(400).json({ error: 'Invalid email or password', err: err });
         }
 
         // Check if the password matches

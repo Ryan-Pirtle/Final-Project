@@ -11,7 +11,7 @@ app.use(cors());
 app.use(express.json()); // This will allow all domains to access the API
 
 // Use Other Routes
-app.use('/api-auth', authenticationRoutes); //The three route problem still applies for this
+app.use('/api', authenticationRoutes); //The three route problem still applies for this
 
 /*
 
