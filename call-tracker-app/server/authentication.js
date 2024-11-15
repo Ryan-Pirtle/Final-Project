@@ -5,8 +5,25 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const db = require('./db'); 
 const router = express.Router();
+const session = require('express-session');
+const SQLiteStore = require('connect-sqlite3')(session);
 
 const JWT_SECRET = 'your_secret_key'; // Replace with an environment variable in production
+
+async function fetchProtectedData() {
+    const token = localStorage.getItem("token");
+
+    try {
+        const response = await router.get("http://localhost:5000/api/protected", {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+        console.log("Protected data:", response.data);
+    } catch (error) {
+        console.error("Error accessing protected route", error.response.data);
+    }
+}
 
 // Test Route
 router.get('/test', (req, res) => {
@@ -58,6 +75,7 @@ router.post('/login', (req, res) => {
 
         // Generate a JWT token
         const token = jwt.sign({ id: user.id, role: user.role }, JWT_SECRET, { expiresIn: '1h' });
+        localStorage.setItem("token", token);
         res.json({ message: 'Login successful', token });
     });
 });
@@ -80,3 +98,19 @@ router.get('/protected', authenticateToken, (req, res) => {
 
 
 module.exports = router;
+/*import axios from "axios";
+
+async function fetchProtectedData() {
+    const token = localStorage.getItem("token");
+
+    try {
+        const response = await axios.get("http://localhost:5000/api-auth/protected", {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+        console.log("Protected data:", response.data);
+    } catch (error) {
+        console.error("Error accessing protected route", error.response.data);
+    }
+} */

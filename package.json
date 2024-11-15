@@ -1,7 +1,9 @@
 {
   "dependencies": {
     "bcryptjs": "^2.4.3",
+    "connect-sqlite3": "^0.9.15",
     "curl": "^0.1.4",
+    "express-session": "^1.18.1",
     "jsonwebtoken": "^9.0.2",
     "vite": "^5.4.10"
   },
