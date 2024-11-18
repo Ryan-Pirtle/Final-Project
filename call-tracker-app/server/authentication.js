@@ -59,7 +59,7 @@ router.post('/register', authenticateToken, async (req, res) => {
 //User Login
 router.post('/login', (req, res) => {
     const { email, password } = req.body;
-    console.log("Req.body", req.body);
+    console.log("Req.body1", req.body);
     // Find user by email
     const sql = `SELECT * FROM Users WHERE email = ?`;
     db.get(sql, [email], async (err, user) => {
@@ -75,7 +75,8 @@ router.post('/login', (req, res) => {
 
         // Generate a JWT token
         const token = jwt.sign({ id: user.id, role: user.role }, JWT_SECRET, { expiresIn: '1h' });
-        localStorage.setItem("token", token);
+        // localStorage.setItem("token", token);
+        console.log("token ", token);
         res.json({ message: 'Login successful', token });
     });
 });
@@ -98,19 +99,3 @@ router.get('/protected', authenticateToken, (req, res) => {
 
 
 module.exports = router;
-/*import axios from "axios";
-
-async function fetchProtectedData() {
-    const token = localStorage.getItem("token");
-
-    try {
-        const response = await axios.get("http://localhost:5000/api-auth/protected", {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
-        });
-        console.log("Protected data:", response.data);
-    } catch (error) {
-        console.error("Error accessing protected route", error.response.data);
-    }
-} */
