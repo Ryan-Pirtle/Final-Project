@@ -5,7 +5,7 @@ class TokenAuthentication {
 
     static authenticateToken(req, res, next) {
         const authHeader = req.headers['authorization'];
-        const token = authHeader?.split(' ')[1]; // Safely extract the token
+        const token = authHeader?.split(' ')[1]; // Extract the token
 
         if (!token) {
             return res.status(401).json({ error: 'Access denied' });

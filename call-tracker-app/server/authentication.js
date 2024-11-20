@@ -51,14 +51,18 @@ router.post('/register', TokenAuthentication.authenticateToken, async (req, res)
     const { name, email, password, role } = req.body;
     // console.log("req", req)
     console.log("req body", req.body);
-    console.log("Role ", role);
+    console.log("Role of person trying to create user ", req.user.role);
+
+    if(req.user.role != 'manager'){
+        return res.status(400).json({message: "Only managers can create new users"})
+    }
 
     // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
     // Insert user into the database
     const sql = `INSERT INTO Users (name, email, password, role) VALUES (?, ?, ?, ?)`;
     const params = [name, email, hashedPassword, role];
-    console.log("Params ",params );
+    // console.log("Params ",params );
     db.run(sql, params, function(err) {
         if (err) {
             return res.status(400).json({ error: 'Email may already be in use', msg: err });
