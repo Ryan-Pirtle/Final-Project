@@ -2,27 +2,26 @@ const express = require('express');
 const app = express();
 const sqlite3 = require('sqlite3').verbose();
 const cors = require('cors');
-const bodyParser = require("body-parser")
+const db = require('./db');
+const jwt = require('jsonwebtoken');
+const TokenAuthentication = require('./TokenAuthentication');
+// Other Routes
+const authenticationRoutes = require('./authentication');
 
-//Middleware
+// Middleware
 app.use(cors());
-app.use(express.json());
+app.use(express.json()); // This will allow all domains to access the API
 
-//Database setup
-const db = new sqlite3.Database('./jpec.sqlite', (err) => {
-    if(err) {
-        console.error('Error opening database:', err.nessage);
-    }else{
-        console.log("connected to sqlite database");
-    }
-});
+// Use Other Routes
+app.use('/api', authenticationRoutes); //The three route problem still applies for this
+
 /*
 
   CALL TABLE SECTION
 
 */
 // Get all calls
-app.get('/api/calls', (req, res) => {
+app.get('/api/calls',TokenAuthentication.authenticateToken, (req, res) => {
     db.all('SELECT * FROM Calls', [], (err, rows) => {
         if (err) {
             res.status(400).json({ error: err.message });
@@ -33,7 +32,7 @@ app.get('/api/calls', (req, res) => {
 });
 
 // Get a single call by ID
-app.get('/api/calls/:id', (req, res) => {
+app.get('/api/calls/:id', TokenAuthentication.authenticateToken, (req, res) => {
     const sql = 'SELECT * FROM Calls WHERE id = ?';
     const params = [req.params.id];
     db.get(sql, params, (err, row) => {
@@ -46,9 +45,9 @@ app.get('/api/calls/:id', (req, res) => {
   });
 
 // Get all calls by call type and date range
-app.get('/api/calls-by-type-and-time', (req, res) => {
+app.get('/api/calls-by-type-and-time', TokenAuthentication.authenticateToken, (req, res) => {
     const { callType, time_dispatched, time_completed } = req.query;
-
+    console.log(req.query);
     const sql = `
         SELECT * FROM Calls
         WHERE call_type = ?
@@ -62,11 +61,12 @@ app.get('/api/calls-by-type-and-time', (req, res) => {
             res.status(400).json({ error: err.message });
             return;
         }
+        console.log("rows:",rows);
         res.json({ data: rows });
     });
 });
-//get call by date
-app.get('/api/calls-by-date', (req, res) => {
+//get call by time
+app.get('/api/calls-by-time', TokenAuthentication.authenticateToken, (req, res) => {
   const { time_dispatched, time_completed } = req.query;
 
   // SQL query to select calls by date range
@@ -89,9 +89,8 @@ app.get('/api/calls-by-date', (req, res) => {
 });
 
 // get call by call_type
-app.get('/api/calls-by-type', (req, res) => {
+app.get('/api/calls-by-type', TokenAuthentication.authenticateToken, async (req, res) => {
   const { callType } = req.query; // Only get callType from query parameters
-
   // SQL query to select calls by call type
   const sql = `
       SELECT * FROM Calls
@@ -107,10 +106,11 @@ app.get('/api/calls-by-type', (req, res) => {
       }
       res.json({ data: rows }); // Send the retrieved rows as response
   });
+
 });
 
 // Add a new call
-app.post('/api/calls', (req, res) => {
+app.post('/api/calls', TokenAuthentication.authenticateToken, (req, res) => {
     const { caller_name, caller_address, call_type, crew_assigned, issue_reported } = req.body;
     db.run(`INSERT INTO Calls (caller_name, caller_address, call_type, crew_assigned, issue_reported) 
             VALUES (?, ?, ?, ?, ?)`,
@@ -125,7 +125,7 @@ app.post('/api/calls', (req, res) => {
 });
 
 // Update a call entry by ID
-app.put('/api/calls/:id', (req, res) => {
+app.put('/api/calls/:id', TokenAuthentication.authenticateToken, (req, res) => {
     const { id } = req.params;
     const {
       caller_name,
@@ -166,7 +166,7 @@ app.put('/api/calls/:id', (req, res) => {
     });
   });
 
-  app.delete('/api/calls/:id', (req, res) => {
+  app.delete('/api/calls/:id',TokenAuthentication.authenticateToken, (req, res) => {
     const { id } = req.params;
   
     // SQL query to delete the call entry
@@ -192,7 +192,7 @@ app.put('/api/calls/:id', (req, res) => {
   */
 
   // Create a new user
-app.post('/api/users', (req, res) => {
+app.post('/api/users', TokenAuthentication.authenticateToken, (req, res) => {
     const { name, email, password, role } = req.body;
     const sql = `INSERT INTO Users (name, email, password, role) VALUES (?, ?, ?, ?)`;
     const params = [name, email, password, role];
@@ -218,7 +218,7 @@ app.post('/api/users', (req, res) => {
   });
   
   // Get a single user by ID
-  app.get('/api/users/:id', (req, res) => {
+  app.get('/api/users/:id', TokenAuthentication.authenticateToken, (req, res) => {
     const sql = 'SELECT * FROM Users WHERE id = ?';
     const params = [req.params.id];
     db.get(sql, params, (err, row) => {
@@ -231,7 +231,7 @@ app.post('/api/users', (req, res) => {
   });
   
   // Update a user by ID
-  app.put('/api/users/:id', (req, res) => {
+  app.put('/api/users/:id', TokenAuthentication.authenticateToken, (req, res) => {
     const { name, email, password, role } = req.body;
     const sql = `UPDATE Users SET name = ?, email = ?, password = ?, role = ? WHERE id = ?`;
     const params = [name, email, password, role, req.params.id];
@@ -246,7 +246,7 @@ app.post('/api/users', (req, res) => {
   });
   
   // Delete a user by ID
-  app.delete('/api/users/:id', (req, res) => {
+  app.delete('/api/users/:id', TokenAuthentication.authenticateToken, (req, res) => {
     const sql = 'DELETE FROM Users WHERE id = ?';
     const params = [req.params.id];
   
@@ -266,7 +266,7 @@ app.post('/api/users', (req, res) => {
 */
 
 // Create a new crew
-app.post('/api/crews', (req, res) => {
+app.post('/api/crews', TokenAuthentication.authenticateToken, (req, res) => {
     const { crew_name, crew_contact } = req.body;
     const sql = `INSERT INTO Crews (crew_name, crew_contact) VALUES (?, ?)`;
     const params = [crew_name, crew_contact];
@@ -281,7 +281,7 @@ app.post('/api/crews', (req, res) => {
   });
   
   // Get all crews
-  app.get('/api/crews', (req, res) => {
+  app.get('/api/crews', TokenAuthentication.authenticateToken, (req, res) => {
     db.all('SELECT * FROM Crews', [], (err, rows) => {
       if (err) {
         res.status(400).json({ error: err.message });
@@ -292,7 +292,7 @@ app.post('/api/crews', (req, res) => {
   });
   
   // Get a single crew by ID
-  app.get('/api/crews/:id', (req, res) => {
+  app.get('/api/crews/:id', TokenAuthentication.authenticateToken, (req, res) => {
     const sql = 'SELECT * FROM Crews WHERE id = ?';
     const params = [req.params.id];
     
@@ -306,7 +306,7 @@ app.post('/api/crews', (req, res) => {
   });
   
   // Update a crew by ID
-  app.put('/api/crews/:id', (req, res) => {
+  app.put('/api/crews/:id', TokenAuthentication.authenticateToken, (req, res) => {
     const { crew_name, crew_contact } = req.body;
     const sql = `UPDATE Crews SET crew_name = ?, crew_contact = ? WHERE id = ?`;
     const params = [crew_name, crew_contact, req.params.id];
@@ -321,7 +321,7 @@ app.post('/api/crews', (req, res) => {
   });
   
   // Delete a crew by ID
-  app.delete('/api/crews/:id', (req, res) => {
+  app.delete('/api/crews/:id', TokenAuthentication.authenticateToken, (req, res) => {
     const sql = 'DELETE FROM Crews WHERE id = ?';
     const params = [req.params.id];
   
@@ -339,3 +339,4 @@ const PORT = 5000;
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
 });
+
