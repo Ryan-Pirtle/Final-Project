@@ -7,19 +7,19 @@ const db = require('./db');
 const router = express.Router();
 const session = require('express-session');
 const SQLiteStore = require('connect-sqlite3')(session);
+const TokenAuthentication = require('./TokenAuthentication');
+// const JWT_SECRET = 'your_secret_key'; // Replace with an environment variable in production
 
-const JWT_SECRET = 'your_secret_key'; // Replace with an environment variable in production
+// function authenticateToken(req, res, next) {
+//     const token = req.headers['authorization']?.split(' ')[1];
+//     if (!token) return res.status(401).json({ error: 'Access denied' });
 
-function authenticateToken(req, res, next) {
-    const token = req.headers['authorization']?.split(' ')[1];
-    if (!token) return res.status(401).json({ error: 'Access denied' });
-
-    jwt.verify(token, JWT_SECRET, (err, user) => {
-        if (err) return res.status(403).json({ error: 'Invalid token' });
-        req.user = user;
-        next();
-    });
-}
+//     jwt.verify(token, JWT_SECRET, (err, user) => {
+//         if (err) return res.status(403).json({ error: 'Invalid token' });
+//         req.user = user;
+//         next();
+//     });
+// }
 
 async function fetchProtectedData() {
     const token = localStorage.getItem("token");
@@ -47,7 +47,7 @@ router.get('/test', (req, res) => {
     })
 })
 // User Registration 
-router.post('/register', authenticateToken, async (req, res) => {
+router.post('/register', TokenAuthentication.authenticateToken, async (req, res) => {
     const { name, email, password, role } = req.body;
     // console.log("req", req)
     console.log("req body", req.body);
@@ -85,16 +85,14 @@ router.post('/login', (req, res) => {
         }
 
         // Generate a JWT token
-        const token = jwt.sign({ id: user.id, role: user.role }, JWT_SECRET, { expiresIn: '1h' });
-        // localStorage.setItem("token", token);
+        const token = TokenAuthentication.generateToken(user)
         console.log("token ", token);
         res.json({ message: 'Login successful', token });
     });
 });
 
-
 // Example protected route
-router.get('/protected', authenticateToken, (req, res) => {
+router.get('/protected', TokenAuthentication.authenticateToken, (req, res) => {
     res.json({ message: `Welcome, your role is ${req.user.role}` });
 });
 

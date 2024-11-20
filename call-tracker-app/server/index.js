@@ -4,23 +4,24 @@ const sqlite3 = require('sqlite3').verbose();
 const cors = require('cors');
 const db = require('./db');
 const jwt = require('jsonwebtoken');
-
+const TokenAuthentication = require('./TokenAuthentication');
 // Other Routes
 const authenticationRoutes = require('./authentication');
 
 
-const JWT_SECRET = 'your_secret_key'
 
-function authenticateToken(req, res, next) {
-    const token = req.headers['authorization']?.split(' ')[1];
-    if (!token) return res.status(401).json({ error: 'Access denied' });
+// const JWT_SECRET = 'your_secret_key'
 
-    jwt.verify(token, JWT_SECRET, (err, user) => {
-        if (err) return res.status(403).json({ error: 'Invalid token' });
-        req.user = user;
-        next();
-    });
-}
+// function authenticateToken(req, res, next) {
+//     const token = req.headers['authorization']?.split(' ')[1];
+//     if (!token) return res.status(401).json({ error: 'Access denied' });
+
+//     jwt.verify(token, JWT_SECRET, (err, user) => {
+//         if (err) return res.status(403).json({ error: 'Invalid token' });
+//         req.user = user;
+//         next();
+//     });
+// }
 
 // Middleware
 app.use(cors());
@@ -35,7 +36,7 @@ app.use('/api', authenticationRoutes); //The three route problem still applies f
 
 */
 // Get all calls
-app.get('/api/calls',authenticateToken, (req, res) => {
+app.get('/api/calls',TokenAuthentication.authenticateToken, (req, res) => {
     db.all('SELECT * FROM Calls', [], (err, rows) => {
         if (err) {
             res.status(400).json({ error: err.message });
