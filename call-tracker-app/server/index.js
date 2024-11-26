@@ -31,6 +31,17 @@ app.get('/api/calls',TokenAuthentication.authenticateToken, (req, res) => {
     });
 });
 
+// Get Unique Call Types
+app.get('/api/callTypes', (req, res) => {
+  db.all('SELECT DISTINCT call_type FROM Calls ', [], (err, rows) => {
+    if (err) {
+        res.status(400).json({ error: err.message });
+        return;
+    }
+    res.json({ data: rows });
+  });
+});
+
 // Get a single call by ID
 app.get('/api/calls/:id', TokenAuthentication.authenticateToken, (req, res) => {
     const sql = 'SELECT * FROM Calls WHERE id = ?';

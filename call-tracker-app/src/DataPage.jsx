@@ -60,12 +60,16 @@ function DataPage() {
 
   // Navigate to login page
   const goToLoginPage = () => {
-    navigate('./');
+    navigate('/');
+  };
+  const goToCallsPage = () => {
+    navigate('/CallsPage');
   };
 
   return (
     <div>
       <button onClick={goToLoginPage}>Go to Login Page</button>
+      <button onClick={goToCallsPage}>Go to Calls Page</button>
 
       <h1>Data Display Page</h1>
 
@@ -103,6 +107,8 @@ function DataPage() {
             onChange={(e) => setCallType(e.target.value)}
           />
         </label>
+
+        
         <label>
           Start Time:
           <input
