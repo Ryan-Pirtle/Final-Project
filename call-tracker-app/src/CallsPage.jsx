@@ -1,68 +1,91 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
 function CallsPage() {
-
   const [data, setData] = useState(null);
   const [errorMessage, setErrorMessage] = useState(null);
-
-  // State for filter fields
-  const [callType, setCallType] = useState('');
+  const [allCallTypes, setAllCallTypes] = useState([]);
+  const [callType, setCallType] = useState('none');
   const [startTime, setStartTime] = useState('');
   const [endTime, setEndTime] = useState('');
+  const [token, setToken] = useState(localStorage.getItem('token') || null);
 
+
+  useEffect(() => {
+    const getTypes = async () => {
+      try {
+        const response = await axios.get('/api/callTypes', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        console.log(response);
+        const callTypes = response.data.data.map((item) => item.call_type); // Extract call_type values
+        setAllCallTypes(callTypes);
+        console.log(callTypes)
+      } catch (error) {
+        console.error("Error fetching call types:", error.response?.data || error.message);
+        setErrorMessage('Failed to fetch call types.');
+      }
+    };
+  
+    getTypes();
+  }, []); // Dependency array ensures it runs only once
+  
   const fetchFilteredData = async () => {
     try {
       let response;
 
-      // Determine which API route to call based on inputs
-      if (!callType && !startTime && !endTime) {
-        response = await axios.get('/api/calls');
-      } else if (callType && !startTime && !endTime) {
-        response = await axios.get(`/api/calls-by-type?callType=${callType}`);
-      } else if (!callType && startTime && endTime) {
-        response = await axios.get(`/api/calls-by-time?startTime=${startTime}&endTime=${endTime}`);
-      } else if (callType && startTime && endTime) {
+      if (callType =="none" && !startTime && !endTime) {
+        response = await axios.get('/api/calls', {
+                    headers: { Authorization: `Bearer ${token}` },
+                  });
+      } else if (callType !="none" && !startTime && !endTime) {
+        response = await axios.get(`/api/calls-by-type?callType=${callType}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+      } else if (callType =="none" && startTime && endTime) {
+        response = await axios.get(`/api/calls-by-time?startTime=${startTime}&endTime=${endTime}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+      } else if (callType !="none" && startTime && endTime) {
         response = await axios.get(
-          `/api/calls-by-type-and-time?callType=${callType}&startTime=${startTime}&endTime=${endTime}`
-        );
+          `/api/calls-by-type-and-time?callType=${callType}&startTime=${startTime}&endTime=${endTime}`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
       } else {
         setErrorMessage('Invalid filter combination.');
         return;
       }
 
-      setData(response.data); // Update state with fetched data
-      setErrorMessage(null); // Clear any existing error messages
+      setData(response.data.data);
+      setErrorMessage(null);
     } catch (error) {
       console.error('Error fetching data:', error.response?.data || error.message);
       setErrorMessage('Failed to fetch data. Please try again.');
     }
   };
-  const changeType = (event) => {
-    setCallType(event.target.value);
-  };
+
   return (
     <div>
       <h1>Filter Calls</h1>
       <div>
-        {/* <label>
-          Call Type:
-          <input
-            type="text"
-            value={callType}
-            onChange={(e) => setCallType(e.target.value)}
-            placeholder="Enter call type"
-          />
-        </label> */}
-
-
         <label>Choose a Call type:</label>
-        <select id="callTypeSelection" name="calls" value = {callType} onChange={changeType}>
-        <option value="none">None</option>
+        <select
+  id="callTypeSelection"
+  name="calls"
+  value={callType}
+  onChange={(e) => setCallType(e.target.value)}
+>
+  <option value="none">None</option>
+  {allCallTypes &&
+    allCallTypes.map((type, index) => (
+      <option key={index} value={type}>
+        {type}
+      </option>
+    ))}
+</select>
 
-        </select>
       </div>
-      
+
       <div>
         <label>
           Start Time:

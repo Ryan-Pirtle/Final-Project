@@ -38,6 +38,7 @@ app.get('/api/callTypes', (req, res) => {
         res.status(400).json({ error: err.message });
         return;
     }
+    console.log(rows);
     res.json({ data: rows });
   });
 });
