@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './AddCallModal.css';
 
 
-function AddCallModal({ isOpen, onClose, onCallAdded, token }) {
+function AddCallModal({ isOpen, onClose, onCallAdded, token, editCallData = null }) {
+    
   const [formData, setFormData] = useState({
     caller_name: '',
     caller_address: '',
@@ -22,19 +23,49 @@ function AddCallModal({ isOpen, onClose, onCallAdded, token }) {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  useEffect(() => {
+    if (editCallData) {
+      setFormData(editCallData); // Pre-fill form with existing data
+    } else {
+      setFormData({
+        caller_name: '',
+        caller_address: '',
+        call_type: '',
+        crew_assigned: '',
+        time_called: '',
+        time_dispatched: '',
+        time_completed: '',
+        issue_reported: '',
+        issue_found: '',
+        dispatcher_id: '',
+      });
+    }
+  }, [editCallData]);
+  
   const handleFormSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post('/api/calls', formData, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      onCallAdded(); // Callback to refresh the call list
-      onClose(); // Close the modal
+      if (editCallData) {
+        // Update existing call
+        await axios.put(`/api/calls/${editCallData.id}`, formData, {
+          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+        });
+        alert('Call updated successfully.');
+      } else {
+        // Add new call
+        await axios.post('/api/calls', formData, {
+          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+        });
+        alert('Call added successfully.');
+      }
+      onCallAdded(); // Refresh call list
+      onClose(); // Close modal
     } catch (error) {
-      console.error('Error adding call:', error.response?.data || error.message);
-      alert('Failed to add call. Please try again.');
+      console.error('Error saving call:', error.response?.data || error.message);
+      alert('Failed to save call. Please try again.');
     }
   };
+  
 
   if (!isOpen) return null; // Do not render the modal if not open
 
