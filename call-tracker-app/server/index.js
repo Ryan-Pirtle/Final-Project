@@ -120,21 +120,66 @@ app.get('/api/calls-by-type', TokenAuthentication.authenticateToken, async (req,
   });
 
 });
-
 // Add a new call
-app.post('/api/calls', TokenAuthentication.authenticateToken, (req, res) => {
-    const { caller_name, caller_address, call_type, crew_assigned, issue_reported } = req.body;
-    db.run(`INSERT INTO Calls (caller_name, caller_address, call_type, crew_assigned, issue_reported) 
-            VALUES (?, ?, ?, ?, ?)`,
-            [caller_name, caller_address, call_type, crew_assigned, issue_reported], 
-            function(err) {
-                if (err) {
-                    res.status(400).json({ error: err.message });
-                    return;
-                }
-                res.status(201).json({ id: this.lastID });
-            });
+app.post('/api/calls', TokenAuthentication.authenticateToken, async (req, res) => {
+  try {
+    const {
+      caller_name,
+      caller_address,
+      call_type,
+      crew_assigned,
+      time_called,
+      time_dispatched,
+      time_completed,
+      issue_reported,
+      issue_found,
+      dispatcher_id
+    } = req.body;
+
+    // Validate required fields
+    if (!caller_name || !caller_address || !call_type) {
+      return res.status(400).json({ error: 'caller_name, caller_address, and call_type are required fields.' });
+    }
+
+    const sql = `
+      INSERT INTO Calls (
+        caller_name, caller_address, call_type, crew_assigned,
+        time_called, time_dispatched, time_completed, issue_reported,
+        issue_found, dispatcher_id
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `;
+
+    const params = [
+      caller_name,
+      caller_address,
+      call_type,
+      crew_assigned || null, // Optional fields can be null if not provided
+      time_called || new Date().toISOString(), // Default to current timestamp if not provided
+      time_dispatched || null,
+      time_completed || null,
+      issue_reported || null,
+      issue_found || null,
+      dispatcher_id || null,
+    ];
+
+    db.run(sql, params, function (err) {
+      if (err) {
+        console.error('Error inserting call:', err.message);
+        return res.status(500).json({ error: 'Failed to insert call into the database.' });
+      }
+
+      // Successful insert
+      res.status(201).json({
+        message: 'Call entry added successfully.',
+        callId: this.lastID, // Retrieve the ID of the newly inserted row
+      });
+    });
+  } catch (error) {
+    console.error('Unexpected error:', error.message);
+    res.status(500).json({ error: 'An unexpected error occurred.' });
+  }
 });
+
 
 // Update a call entry by ID
 app.put('/api/calls/:id', TokenAuthentication.authenticateToken, (req, res) => {
