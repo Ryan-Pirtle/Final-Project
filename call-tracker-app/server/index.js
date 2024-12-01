@@ -308,11 +308,17 @@ app.post('/api/users', TokenAuthentication.authenticateToken, (req, res) => {
   });
   
   // Update a user by ID
-  app.put('/api/users/:id', TokenAuthentication.authenticateToken, (req, res) => {
+  app.put('/api/users/:id', TokenAuthentication.authenticateToken, async (req, res) => {
+    if(req.user.role != 'manager'){
+      return res.status(400).json({message: "Only managers can create new users"})
+  }
     const { name, email, password, role } = req.body;
+
     const sql = `UPDATE Users SET name = ?, email = ?, password = ?, role = ? WHERE id = ?`;
-    const epassword = bcrypt.hash(password, 10);
-    const params = [name, email, epassword, role, req.params.id];
+
+    const newpassword = await bcrypt.hash(password, 10);
+
+    const params = [name, email, newpassword, role, req.params.id];
     console.log("req in update user by id", req);
     db.run(sql, params, function (err) {
       if (err) {

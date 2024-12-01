@@ -26,8 +26,6 @@ class TokenAuthentication {
             id: user.id, // User ID
             role: user.role // User Role
         };
-
-
         // Sign and return the token
         return jwt.sign(payload, TokenAuthentication.JWT_SECRET);
     }

@@ -38,7 +38,7 @@ function AddEditUserModal({ isOpen, onClose, onUserAdded, editUserData }) {
       } else {
         // Add new user
         await axios.post(
-          '/api/users',
+          '/api/register',
           { name, email, password, role },
           { headers: { Authorization: `Bearer ${token}` } }
         );
