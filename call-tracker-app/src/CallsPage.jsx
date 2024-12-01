@@ -58,7 +58,7 @@ function CallsPage() {
         });
       } else if (filters.callType !== "none" && filters.startTime && filters.endTime) {
         response = await axios.get(
-          `/api/calls-by-type-and-time?callType=${filters.callType}&startTime=${filters.startTime}&endTime=${filters.endTime}`,
+          `/api/calls-by-type-and-time?callType=${filters.callType}&time_dispatched=${filters.startTime}&time_completed=${filters.endTime}`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
       } else {
