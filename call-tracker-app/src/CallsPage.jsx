@@ -52,7 +52,8 @@ function CallsPage() {
           headers: { Authorization: `Bearer ${token}` },
         });
       } else if (filters.callType === "none" && filters.startTime && filters.endTime) {
-        response = await axios.get(`/api/calls-by-time?startTime=${filters.startTime}&endTime=${filters.endTime}`, {
+        console.log("Front End times given start and end ", filters.startTime, " ", filters.endTime)
+        response = await axios.get(`/api/calls-by-time?time_dispatched=${filters.startTime}&time_completed=${filters.endTime}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
       } else if (filters.callType !== "none" && filters.startTime && filters.endTime) {
@@ -118,12 +119,7 @@ function CallsPage() {
           <input
             type="datetime-local"
             value={startTime}
-            onChange={(e) => {
-              var time =e.target.value
-              time = time.replace('T', ' ');
-              console.log("Time ",time);
-              setStartTime(time);
-            }}
+            onChange={(e) => setStartTime(convertToSQLiteDateTime(e.target.value))}
           />
         </label>
       </div>
@@ -133,12 +129,7 @@ function CallsPage() {
           <input
             type="datetime-local"
             value={endTime}
-            onChange={(e) => {
-              var etime =e.target.value
-              etime = etime.replace('T', ' ');
-              console.log("eeeTime ",etime);
-              setEndTime(etime);
-              }}
+            onChange={(e) => setEndTime(convertToSQLiteDateTime(e.target.value))}
           />
         </label>
       </div>
