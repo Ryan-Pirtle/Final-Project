@@ -8,18 +8,6 @@ const router = express.Router();
 const session = require('express-session');
 const SQLiteStore = require('connect-sqlite3')(session);
 const TokenAuthentication = require('./TokenAuthentication');
-// const JWT_SECRET = 'your_secret_key'; // Replace with an environment variable in production
-
-// function authenticateToken(req, res, next) {
-//     const token = req.headers['authorization']?.split(' ')[1];
-//     if (!token) return res.status(401).json({ error: 'Access denied' });
-
-//     jwt.verify(token, JWT_SECRET, (err, user) => {
-//         if (err) return res.status(403).json({ error: 'Invalid token' });
-//         req.user = user;
-//         next();
-//     });
-// }
 
 async function fetchProtectedData() {
     const token = localStorage.getItem("token");

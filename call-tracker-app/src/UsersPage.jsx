@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-
+import AddEditUserModal from './components/AddEditUserModal';
 function UsersPage() {
   const [data, setData] = useState(null);
   const [errorMessage, setErrorMessage] = useState(null);
@@ -22,7 +22,7 @@ function UsersPage() {
           headers: { Authorization: `Bearer ${token}` },
         });
       } else {
-        response = await axios.get(`/api/users?role=${roleFilter}`, {
+        response = await axios.get(`/api/users-role?role=${roleFilter}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
       }

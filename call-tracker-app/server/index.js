@@ -4,6 +4,7 @@ const sqlite3 = require('sqlite3').verbose();
 const cors = require('cors');
 const db = require('./db');
 const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
 const TokenAuthentication = require('./TokenAuthentication');
 // Other Routes
 const authenticationRoutes = require('./authentication');
@@ -253,8 +254,10 @@ app.put('/api/calls/:id', TokenAuthentication.authenticateToken, (req, res) => {
 app.post('/api/users', TokenAuthentication.authenticateToken, (req, res) => {
     const { name, email, password, role } = req.body;
     const sql = `INSERT INTO Users (name, email, password, role) VALUES (?, ?, ?, ?)`;
-    const params = [name, email, password, role];
+    const epassword = bcrypt.hash(password, 10);
+    const params = [name, email, epassword, role];
     
+
     db.run(sql, params, function (err) {
       if (err) {
         res.status(400).json({ error: err.message });
@@ -263,14 +266,30 @@ app.post('/api/users', TokenAuthentication.authenticateToken, (req, res) => {
       res.status(201).json({ id: this.lastID });
     });
   });
-  
+
   // Get all users
-  app.get('/api/users', (req, res) => {
+  app.get('/api/users', TokenAuthentication.authenticateToken, (req, res) => {
     db.all('SELECT * FROM Users', [], (err, rows) => {
       if (err) {
         res.status(400).json({ error: err.message });
         return;
       }
+      res.json({ data: rows });
+    });
+  });
+
+  // Get Users by Role
+  app.get('/api/users-role', TokenAuthentication.authenticateToken, (req, res) => {
+    const {role} = req.query;
+    console.log("role received ", role)
+    const sql = 'Select * FROM Users WHERE role = ?';
+    const params = [role]
+    db.all(sql, params, (err, rows) => {
+      if (err) {
+        res.status(400).json({ error: err.message });
+        return;
+      }
+      console.log("Data gotten by get users by role ", rows)
       res.json({ data: rows });
     });
   });
@@ -292,8 +311,9 @@ app.post('/api/users', TokenAuthentication.authenticateToken, (req, res) => {
   app.put('/api/users/:id', TokenAuthentication.authenticateToken, (req, res) => {
     const { name, email, password, role } = req.body;
     const sql = `UPDATE Users SET name = ?, email = ?, password = ?, role = ? WHERE id = ?`;
-    const params = [name, email, password, role, req.params.id];
-  
+    const epassword = bcrypt.hash(password, 10);
+    const params = [name, email, epassword, role, req.params.id];
+    console.log("req in update user by id", req);
     db.run(sql, params, function (err) {
       if (err) {
         res.status(400).json({ error: err.message });

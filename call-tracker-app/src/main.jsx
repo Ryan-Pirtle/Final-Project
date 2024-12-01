@@ -14,7 +14,7 @@ createRoot(document.getElementById('root')).render(
         <Route path='/' element={<LoginPage />}/>
         <Route path='/DataPage' element={<DataPage />}/>
         <Route path='/CallsPage' element={<CallsPage />}/>
-        <Route path='/UserPage' element={<UsersPage />}></Route>
+        <Route path='/UsersPage' element={<UsersPage />}></Route>
         </Routes>
         </Router>
   </StrictMode>,
