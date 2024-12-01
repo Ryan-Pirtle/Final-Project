@@ -12,6 +12,7 @@ function CallsPage() {
   const [token] = useState(localStorage.getItem('token') || null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editCallData, setEditCallData] = useState(null); // Stores call data for editing
+  const convertToSQLiteDateTime = (isoDateTime) => isoDateTime.replace('T', ' ');
 
   useEffect(() => {
     const getTypes = async () => {
@@ -34,29 +35,36 @@ function CallsPage() {
   const fetchFilteredData = async () => {
     try {
       let response;
-
-      if (callType === "none" && !startTime && !endTime) {
+      const filters = { callType, startTime, endTime };
+  
+      // Default endTime to current datetime if startTime is set but endTime is undefined
+      if (filters.startTime && !filters.endTime) {
+        const now = new Date();
+        filters.endTime = `${now.toISOString().split('T')[0]} ${now.toTimeString().split(' ')[0]}`;
+      }
+  
+      if (filters.callType === "none" && !filters.startTime && !filters.endTime) {
         response = await axios.get('/api/calls', {
           headers: { Authorization: `Bearer ${token}` },
         });
-      } else if (callType !== "none" && !startTime && !endTime) {
-        response = await axios.get(`/api/calls-by-type?callType=${callType}`, {
+      } else if (filters.callType !== "none" && !filters.startTime && !filters.endTime) {
+        response = await axios.get(`/api/calls-by-type?callType=${filters.callType}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
-      } else if (callType === "none" && startTime && endTime) {
-        response = await axios.get(`/api/calls-by-time?startTime=${startTime}&endTime=${endTime}`, {
+      } else if (filters.callType === "none" && filters.startTime && filters.endTime) {
+        response = await axios.get(`/api/calls-by-time?startTime=${filters.startTime}&endTime=${filters.endTime}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
-      } else if (callType !== "none" && startTime && endTime) {
+      } else if (filters.callType !== "none" && filters.startTime && filters.endTime) {
         response = await axios.get(
-          `/api/calls-by-type-and-time?callType=${callType}&startTime=${startTime}&endTime=${endTime}`, {
-            headers: { Authorization: `Bearer ${token}` },
-          });
+          `/api/calls-by-type-and-time?callType=${filters.callType}&startTime=${filters.startTime}&endTime=${filters.endTime}`,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
       } else {
         setErrorMessage('Invalid filter combination.');
         return;
       }
-
+  
       setData(response.data.data);
       setErrorMessage(null);
     } catch (error) {
@@ -64,7 +72,7 @@ function CallsPage() {
       setErrorMessage('Failed to fetch data. Please try again.');
     }
   };
-
+  
   const handleDeleteCall = async (id) => {
     try {
       await axios.delete(`/api/calls/${id}`, {
@@ -92,7 +100,7 @@ function CallsPage() {
           id="callTypeSelection"
           name="calls"
           value={callType}
-          onChange={(e) => setCallType(e.target.value)}
+          onChange={(e) => {setCallType(e.target.value)}}
         >
           <option value="none">None</option>
           {allCallTypes &&
@@ -108,9 +116,14 @@ function CallsPage() {
         <label>
           Start Time:
           <input
-            type="time"
+            type="datetime-local"
             value={startTime}
-            onChange={(e) => setStartTime(e.target.value)}
+            onChange={(e) => {
+              var time =e.target.value
+              time = time.replace('T', ' ');
+              console.log("Time ",time);
+              setStartTime(time);
+            }}
           />
         </label>
       </div>
@@ -118,9 +131,14 @@ function CallsPage() {
         <label>
           End Time:
           <input
-            type="time"
+            type="datetime-local"
             value={endTime}
-            onChange={(e) => setEndTime(e.target.value)}
+            onChange={(e) => {
+              var etime =e.target.value
+              etime = etime.replace('T', ' ');
+              console.log("eeeTime ",etime);
+              setEndTime(etime);
+              }}
           />
         </label>
       </div>
@@ -139,6 +157,7 @@ function CallsPage() {
               <th>Caller Address</th>
               <th>Call Type</th>
               <th>Crew Assigned</th>
+              <th>Time Called</th>
               <th>Actions</th>
             </tr>
           </thead>
@@ -150,6 +169,7 @@ function CallsPage() {
                 <td>{item.caller_address}</td>
                 <td>{item.call_type}</td>
                 <td>{item.crew_assigned}</td>
+                <td>{item.time_called}</td>
                 <td>
                   <button onClick={() => handleEditCall(item)}>Edit</button>
                   <button onClick={() => handleDeleteCall(item.id)}>Delete</button>

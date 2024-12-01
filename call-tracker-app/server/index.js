@@ -63,7 +63,7 @@ app.get('/api/calls-by-type-and-time', TokenAuthentication.authenticateToken, (r
     const sql = `
         SELECT * FROM Calls
         WHERE call_type = ?
-        AND time_dispatched BETWEEN ? AND ?
+        AND time_called BETWEEN ? AND ?
     `;
 
     const params = [callType, time_dispatched, time_completed];
@@ -80,11 +80,12 @@ app.get('/api/calls-by-type-and-time', TokenAuthentication.authenticateToken, (r
 //get call by time
 app.get('/api/calls-by-time', TokenAuthentication.authenticateToken, (req, res) => {
   const { time_dispatched, time_completed } = req.query;
+  console.log("Received time range:", time_dispatched, time_completed);
 
   // SQL query to select calls by date range
   const sql = `
       SELECT * FROM Calls
-      WHERE time_dispatched BETWEEN ? AND ?
+      WHERE time_called BETWEEN ? AND ?
   `;
   const params = [time_dispatched, time_completed];
 
