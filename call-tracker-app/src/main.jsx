@@ -7,6 +7,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import DataPage from './DataPage.jsx'
 import CallsPage from './CallsPage.jsx'
 import UsersPage from './UsersPage.jsx'
+import CrewsPage from './CrewsPage.jsx';
 createRoot(document.getElementById('root')).render(
   <StrictMode>
         <Router>
@@ -15,6 +16,7 @@ createRoot(document.getElementById('root')).render(
         <Route path='/DataPage' element={<DataPage />}/>
         <Route path='/CallsPage' element={<CallsPage />}/>
         <Route path='/UsersPage' element={<UsersPage />}></Route>
+        <Route path='/CrewsPage' element={<CrewsPage />}/>
         </Routes>
         </Router>
   </StrictMode>,

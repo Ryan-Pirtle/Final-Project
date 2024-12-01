@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import AddCallModal from './components/AddCallModal';
+import Navigation from './components/Navigation';
+
 
 function CallsPage() {
   const [data, setData] = useState(null);
@@ -94,6 +96,7 @@ function CallsPage() {
 
   return (
     <div>
+      <Navigation />
       <h1>Filter Calls</h1>
       <div>
         <label>Choose a Call type:</label>
