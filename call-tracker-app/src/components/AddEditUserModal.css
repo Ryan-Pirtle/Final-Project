@@ -12,7 +12,10 @@
     z-index: 1000;
   }
   
+<<<<<<< HEAD
   
+=======
+>>>>>>> e16e9ab70c33dd3b164bb3b011f83ff6af556ead
   /* Modal content box */
   .modal-content {
     background: #fff; /* White background */
@@ -22,8 +25,11 @@
     max-width: 500px; /* Limit modal width */
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); /* Drop shadow */
     animation: slideIn 0.3s ease-out; /* Slide-in effect */
+<<<<<<< HEAD
     overflow-y: auto; /* Add vertical scroll if content exceeds height */
     overflow-x: hidden; /* Prevent horizontal overflow */
+=======
+>>>>>>> e16e9ab70c33dd3b164bb3b011f83ff6af556ead
   }
   
   /* Modal header */
