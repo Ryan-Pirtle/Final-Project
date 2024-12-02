@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import AddCallModal from './components/AddCallModal';
+import Navigation from './components/Navigation';
+
 
 function CallsPage() {
   const [data, setData] = useState(null);
@@ -52,12 +54,13 @@ function CallsPage() {
           headers: { Authorization: `Bearer ${token}` },
         });
       } else if (filters.callType === "none" && filters.startTime && filters.endTime) {
-        response = await axios.get(`/api/calls-by-time?startTime=${filters.startTime}&endTime=${filters.endTime}`, {
+        console.log("Front End times given start and end ", filters.startTime, " ", filters.endTime)
+        response = await axios.get(`/api/calls-by-time?time_dispatched=${filters.startTime}&time_completed=${filters.endTime}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
       } else if (filters.callType !== "none" && filters.startTime && filters.endTime) {
         response = await axios.get(
-          `/api/calls-by-type-and-time?callType=${filters.callType}&startTime=${filters.startTime}&endTime=${filters.endTime}`,
+          `/api/calls-by-type-and-time?callType=${filters.callType}&time_dispatched=${filters.startTime}&time_completed=${filters.endTime}`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
       } else {
@@ -93,6 +96,7 @@ function CallsPage() {
 
   return (
     <div>
+      <Navigation />
       <h1>Filter Calls</h1>
       <div>
         <label>Choose a Call type:</label>
@@ -102,7 +106,7 @@ function CallsPage() {
           value={callType}
           onChange={(e) => {setCallType(e.target.value)}}
         >
-          <option value="none">None</option>
+          <option value="none">All</option>
           {allCallTypes &&
             allCallTypes.map((type, index) => (
               <option key={index} value={type}>
@@ -118,12 +122,7 @@ function CallsPage() {
           <input
             type="datetime-local"
             value={startTime}
-            onChange={(e) => {
-              var time =e.target.value
-              time = time.replace('T', ' ');
-              console.log("Time ",time);
-              setStartTime(time);
-            }}
+            onChange={(e) => setStartTime(convertToSQLiteDateTime(e.target.value))}
           />
         </label>
       </div>
@@ -133,12 +132,7 @@ function CallsPage() {
           <input
             type="datetime-local"
             value={endTime}
-            onChange={(e) => {
-              var etime =e.target.value
-              etime = etime.replace('T', ' ');
-              console.log("eeeTime ",etime);
-              setEndTime(etime);
-              }}
+            onChange={(e) => setEndTime(convertToSQLiteDateTime(e.target.value))}
           />
         </label>
       </div>
