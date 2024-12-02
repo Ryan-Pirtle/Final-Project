@@ -1,7 +1,15 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+
 
 const NavigationHeader = () => {
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    localStorage.removeItem('token'); // Remove the token from localStorage
+    navigate('/'); // Redirect to the login page
+  };
+
   return (
     <nav style={styles.nav}>
       <ul style={styles.ul}>
@@ -15,7 +23,7 @@ const NavigationHeader = () => {
           <Link to="/CrewsPage" style={styles.link}>Crews</Link>
         </li>
         <li style={styles.li}>
-          <Link to="/" style={styles.link}>Logout</Link>
+          <Link to="/" onClick={handleLogout} style={styles.link}>Logout</Link>
         </li>
       </ul>
     </nav>

@@ -106,7 +106,7 @@ function CallsPage() {
           value={callType}
           onChange={(e) => {setCallType(e.target.value)}}
         >
-          <option value="none">None</option>
+          <option value="none">All</option>
           {allCallTypes &&
             allCallTypes.map((type, index) => (
               <option key={index} value={type}>
