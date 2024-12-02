@@ -6,9 +6,6 @@ const NavigationHeader = () => {
     <nav style={styles.nav}>
       <ul style={styles.ul}>
         <li style={styles.li}>
-          <Link to="/DataPage" style={styles.link}>Data</Link>
-        </li>
-        <li style={styles.li}>
           <Link to="/CallsPage" style={styles.link}>Calls</Link>
         </li>
         <li style={styles.li}>

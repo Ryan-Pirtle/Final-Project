@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import AddEditUserModal from './components/AddEditUserModal';
+import Navigation from './components/Navigation';
+
 function UsersPage() {
   const [data, setData] = useState(null);
   const [errorMessage, setErrorMessage] = useState(null);
@@ -55,6 +57,7 @@ function UsersPage() {
 
   return (
     <div>
+      <Navigation />
       <h1>User Management</h1>
 
       <div>

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import Navigation from './components/Navigation';
 
 function CrewsPage() {
   const [crews, setCrews] = useState([]);
@@ -81,6 +82,7 @@ function CrewsPage() {
 
   return (
     <div>
+      <Navigation />
       <h1>Manage Crews</h1>
       <button onClick={() => openModal()}>Add New Crew</button>
 
