@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import AddCallModal from './components/AddCallModal';
 import Navigation from './components/Navigation';
+import "./CallsPage.css";
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 
 function CallsPage() {
@@ -133,45 +135,50 @@ function CallsPage() {
     <div>
       <Navigation />
       <h1>Filter Calls</h1>
-      <div>
-        <label>Choose a Call type:</label>
-        <select
-          id="callTypeSelection"
-          name="calls"
-          value={callType}
-          onChange={(e) => {setCallType(e.target.value)}}
-        >
-          <option value="none">All</option>
-          {allCallTypes &&
-            allCallTypes.map((type, index) => (
-              <option key={index} value={type}>
-                {type}
-              </option>
-            ))}
-        </select>
-      </div>
+      <div className="filter-container">
+  <div>
+    <label>Choose a Call Type:</label>
+    <select
+      id="callTypeSelection"
+      name="calls"
+      value={callType}
+      onChange={(e) => setCallType(e.target.value)}
+    >
+      <option value="none">All</option>
+      {allCallTypes &&
+        allCallTypes.map((type, index) => (
+          <option key={index} value={type}>
+            {type}
+          </option>
+        ))}
+    </select>
+  </div>
 
-      <div>
-        <label>
-          Start Time:
-          <input
-            type="datetime-local"
-            value={startTime}
-            onChange={(e) => setStartTime(convertToSQLiteDateTime(e.target.value))}
-          />
-        </label>
-      </div>
-      <div>
-        <label>
-          End Time:
-          <input
-            type="datetime-local"
-            value={endTime}
-            onChange={(e) => setEndTime(convertToSQLiteDateTime(e.target.value))}
-          />
-        </label>
-      </div>
-      <button onClick={fetchFilteredData}>Fetch Calls</button>
+  <div>
+    <label>
+      Start Time:
+      <input
+        type="datetime-local"
+        value={startTime}
+        onChange={(e) => setStartTime(convertToSQLiteDateTime(e.target.value))}
+      />
+    </label>
+  </div>
+  <div>
+    <label>
+      End Time:
+      <input
+        type="datetime-local"
+        value={endTime}
+        onChange={(e) => setEndTime(convertToSQLiteDateTime(e.target.value))}
+      />
+    </label>
+  </div>
+
+  <div>
+    <button onClick={fetchFilteredData}>Fetch Calls</button>
+  </div>
+</div>
 
       <button onClick={() => setIsModalOpen(true)} style={{ marginLeft: '10px' }}>Add New Call</button>
 
@@ -182,35 +189,40 @@ function CallsPage() {
       {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
 
       {data && data.length > 0 ? (
-        <table border="1">
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Caller Name</th>
-              <th>Caller Address</th>
-              <th>Call Type</th>
-              <th>Crew Assigned</th>
-              <th>Time Called</th>
-              <th>Actions</th>
+        <table className="table table-striped table-bordered">
+        <thead className="thead-dark">
+          <tr>
+            <th>ID</th>
+            <th>Caller Name</th>
+            <th>Caller Address</th>
+            <th>Call Type</th>
+            <th>Crew Assigned</th>
+            <th>Time Called</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {data.map((item) => (
+            <tr key={item.id}>
+              <td>{item.id}</td>
+              <td>{item.caller_name}</td>
+              <td>{item.caller_address}</td>
+              <td>{item.call_type}</td>
+              <td>{item.crew_assigned}</td>
+              <td>{item.time_called}</td>
+              <td className="actions">
+                <button className="btn btn-primary btn-sm" onClick={() => handleEditCall(item)}>
+                  Edit
+                </button>
+                <button className="btn btn-danger btn-sm" onClick={() => handleDeleteCall(item.id)}>
+                  Delete
+                </button>
+              </td>
             </tr>
-          </thead>
-          <tbody>
-            {data.map((item) => (
-              <tr key={item.id}>
-                <td>{item.id}</td>
-                <td>{item.caller_name}</td>
-                <td>{item.caller_address}</td>
-                <td>{item.call_type}</td>
-                <td>{item.crew_assigned}</td>
-                <td>{item.time_called}</td>
-                <td>
-                  <button onClick={() => handleEditCall(item)}>Edit</button>
-                  <button onClick={() => handleDeleteCall(item.id)}>Delete</button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+          ))}
+        </tbody>
+      </table>
+        
       ) : (
         <p>No data available.</p>
       )}
