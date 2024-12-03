@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Navigation from './components/Navigation';
+import './CrewsPage.css';
 
 function CrewsPage() {
   const [crews, setCrews] = useState([]);
@@ -81,15 +82,18 @@ function CrewsPage() {
   };
 
   return (
-    <div>
+    <div className="container">
       <Navigation />
       <h1>Manage Crews</h1>
-      <button onClick={() => openModal()}>Add New Crew</button>
+      
+      <div className="action-buttons">
+        <button onClick={() => openModal()}>Add New Crew</button>
+      </div>
 
-      {errorMessage && <p style={{ color: "red" }}>{errorMessage}</p>}
+      {errorMessage && <p className="error-message">{errorMessage}</p>}
 
       {crews && crews.length > 0 ? (
-        <table border="1">
+        <table>
           <thead>
             <tr>
               <th>ID</th>
@@ -105,8 +109,8 @@ function CrewsPage() {
                 <td>{crew.crew_name}</td>
                 <td>{crew.crew_contact}</td>
                 <td>
-                  <button onClick={() => openModal(crew)}>Edit</button>
-                  <button onClick={() => handleDeleteCrew(crew.id)}>Delete</button>
+                  <button className="edit" onClick={() => openModal(crew)}>Edit</button>
+                  <button className="delete" onClick={() => handleDeleteCrew(crew.id)}>Delete</button>
                 </td>
               </tr>
             ))}
@@ -116,7 +120,6 @@ function CrewsPage() {
         <p>No crews available.</p>
       )}
 
-      {/* Modal for adding/editing crews */}
       {isModalOpen && (
         <div className="modal">
           <div className="modal-content">
@@ -142,12 +145,10 @@ function CrewsPage() {
                   required
                 />
               </label>
-              <button type="button" onClick={handleSaveCrew}>
-                Save
-              </button>
-              <button type="button" onClick={closeModal}>
-                Cancel
-              </button>
+              <div className="action-buttons">
+                <button type="button" onClick={handleSaveCrew}>Save</button>
+                <button type="button" onClick={closeModal}>Cancel</button>
+              </div>
             </form>
           </div>
         </div>

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import AddEditUserModal from './components/AddEditUserModal';
 import Navigation from './components/Navigation';
+import './UsersPage.css'; // Import the CSS file
 
 function UsersPage() {
   const [data, setData] = useState(null);
@@ -56,11 +57,11 @@ function UsersPage() {
   };
 
   return (
-    <div>
+    <div className="container">
       <Navigation />
       <h1>User Management</h1>
 
-      <div>
+      <div className="filter-container">
         <label>Filter by Role:</label>
         <select
           value={roleFilter}
@@ -72,12 +73,12 @@ function UsersPage() {
         </select>
       </div>
 
-      <button onClick={() => setIsModalOpen(true)}>Add New User</button>
+      <button className="add-user" onClick={() => setIsModalOpen(true)}>Add New User</button>
 
-      {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
+      {errorMessage && <p className="error-message">{errorMessage}</p>}
 
       {data && data.length > 0 ? (
-        <table border="1">
+        <table>
           <thead>
             <tr>
               <th>ID</th>
@@ -95,8 +96,8 @@ function UsersPage() {
                 <td>{item.email}</td>
                 <td>{item.role}</td>
                 <td>
-                  <button onClick={() => handleEditUser(item)}>Edit</button>
-                  <button onClick={() => handleDeleteUser(item.id)}>Delete</button>
+                  <button className="edit" onClick={() => handleEditUser(item)}>Edit</button>
+                  <button className="delete" onClick={() => handleDeleteUser(item.id)}>Delete</button>
                 </td>
               </tr>
             ))}
@@ -106,7 +107,6 @@ function UsersPage() {
         <p>No users available.</p>
       )}
 
-      {/* Add/Edit User Modal */}
       {isModalOpen && (
         <AddEditUserModal
           isOpen={isModalOpen}

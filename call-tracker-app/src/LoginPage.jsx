@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import './LoginPage.css'; // Import the CSS file
 
 function LoginPage() {
   const [token, setToken] = useState(localStorage.getItem('token') || null);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState(null);
-
 
   const navigate = useNavigate();
 
@@ -30,30 +30,37 @@ function LoginPage() {
   };
 
   const goToCallsPage = () => {
-    console.log("test")
+    console.log("test");
     navigate('./CallsPage');
-  } 
+  };
 
   return (
-    <div>
-      <input
-        type="text"
-        placeholder="Email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-      />
-      <input
-        type="password"
-        placeholder="Password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-      />
-      <button onClick={handleLogin}>Login</button>
-      
+    <div className="wrapper">
+      <div className="login-container">
+      <div className="logo-container">
+          <img
+            src="./assets/jpeclog.png" // Path from the public folder
+            alt="Jackson Purchase Energy Company Logo"
+            className="jp-energy-logo"
+          />
+        </div>
+        <h2>Login</h2>
+        <input
+          type="text"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
+        <input
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+        <button onClick={handleLogin}>Login</button>
 
-      {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
-
-      
+        {errorMessage && <p className="error-message">{errorMessage}</p>}
+      </div>
     </div>
   );
 }
