@@ -49,6 +49,7 @@ function CallsPage() {
         response = await axios.get('/api/calls', {
           headers: { Authorization: `Bearer ${token}` },
         });
+        console.log(response);
       } else if (filters.callType !== "none" && !filters.startTime && !filters.endTime) {
         response = await axios.get(`/api/calls-by-type?callType=${filters.callType}`, {
           headers: { Authorization: `Bearer ${token}` },
@@ -94,6 +95,40 @@ function CallsPage() {
     setIsModalOpen(true); // Open modal with pre-filled data
   };
 
+  const handleExportToCSV = () => {
+    // Check if data exists and has items
+    if (!data || !data.length) {
+      alert('No data available to export.');
+      return;
+    }
+  
+    // Access the inner `data` array
+    const callsData = data; // Assuming `data` is already the inner data array
+    if (!callsData || !callsData.length) {
+      alert('No valid data to export.');
+      return;
+    }
+  
+    // Convert JSON data to CSV
+    const headers = Object.keys(callsData[0]).join(','); // Get the column headers
+    const rows = callsData.map((row) => Object.values(row).map(value => `"${value}"`).join(',')).join('\n'); // Escape values for CSV format
+  
+    const csvContent = `${headers}\n${rows}`; // Combine headers and rows
+  
+    // Create a downloadable Blob
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+  
+    // Create a download link and click it programmatically
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', 'calls_data.csv');
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link); // Clean up the DOM
+    URL.revokeObjectURL(url); // Free up memory
+  };
+  
   return (
     <div>
       <Navigation />
@@ -138,7 +173,11 @@ function CallsPage() {
       </div>
       <button onClick={fetchFilteredData}>Fetch Calls</button>
 
-      <button onClick={() => setIsModalOpen(true)}>Add New Call</button>
+      <button onClick={() => setIsModalOpen(true)} style={{ marginLeft: '10px' }}>Add New Call</button>
+
+      <button onClick={handleExportToCSV} style={{ marginLeft: '10px' }}>
+        Export to CSV
+      </button>
 
       {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
 
