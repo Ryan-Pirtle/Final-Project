@@ -5,10 +5,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const db = require('./db'); 
 const router = express.Router();
-<<<<<<< HEAD
-
 const JWT_SECRET = 'your_secret_key'; // Replace with an environment variable in production
-=======
 const session = require('express-session');
 const SQLiteStore = require('connect-sqlite3')(session);
 const TokenAuthentication = require('./TokenAuthentication');
@@ -27,7 +24,6 @@ async function fetchProtectedData() {
         console.error("Error accessing protected route", error.response.data);
     }
 }
->>>>>>> 9dbcdd982fc0a14f805b0b4c63ac2a3b283272cf
 
 // Test Route
 router.get('/test', (req, res) => {

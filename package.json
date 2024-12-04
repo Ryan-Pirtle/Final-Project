@@ -1,13 +1,11 @@
 {
   "dependencies": {
     "bcryptjs": "^2.4.3",
-<<<<<<< HEAD
-=======
     "bootstrap": "^5.3.3",
     "connect-sqlite3": "^0.9.15",
->>>>>>> 9dbcdd982fc0a14f805b0b4c63ac2a3b283272cf
     "curl": "^0.1.4",
     "jsonwebtoken": "^9.0.2",
+    "react-router-dom": "^7.0.2",
     "vite": "^5.4.10"
   },
   "devDependencies": {

@@ -4,12 +4,6 @@ import './index.css'
 import LoginPage from './LoginPage.jsx'
 import CallPage from './CallPage.jsx'
 import 'mdb-react-ui-kit/dist/css/mdb.min.css';
-<<<<<<< HEAD
-
-createRoot(document.getElementById('root')).render(
-  <StrictMode>
-    <CallPage />
-=======
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import CallsPage from './CallsPage.jsx'
 import UsersPage from './UsersPage.jsx'
@@ -24,6 +18,5 @@ createRoot(document.getElementById('root')).render(
         <Route path='/CrewsPage' element={<CrewsPage />}/>
         </Routes>
         </Router>
->>>>>>> 9dbcdd982fc0a14f805b0b4c63ac2a3b283272cf
   </StrictMode>,
 )

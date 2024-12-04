@@ -10,8 +10,10 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "connect-sqlite3": "^0.9.15",
     "cors": "^2.8.5",
     "express": "^4.21.1",
+    "express-session": "^1.18.1",
     "server": "file:",
     "sqlite3": "^5.1.7"
   }

@@ -3,12 +3,9 @@ const app = express();
 const sqlite3 = require('sqlite3').verbose();
 const cors = require('cors');
 const db = require('./db');
-<<<<<<< HEAD
-=======
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const TokenAuthentication = require('./TokenAuthentication');
->>>>>>> 9dbcdd982fc0a14f805b0b4c63ac2a3b283272cf
 // Other Routes
 const authenticationRoutes = require('./authentication')
 
@@ -254,14 +251,10 @@ app.post('/api/users', (req, res) => {
   });
   
   // Update a user by ID
-<<<<<<< HEAD
-  app.put('/api/users/:id', (req, res) => {
-=======
   app.put('/api/users/:id', TokenAuthentication.authenticateToken, async (req, res) => {
     if(req.user.role != 'manager'){
       return res.status(400).json({message: "Only managers can create new users"})
   }
->>>>>>> 9dbcdd982fc0a14f805b0b4c63ac2a3b283272cf
     const { name, email, password, role } = req.body;
 
     const sql = `UPDATE Users SET name = ?, email = ?, password = ?, role = ? WHERE id = ?`;
