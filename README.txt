@@ -1,3 +1,3 @@
-To run you will need to run node.js in the server folder
+To run you will need to run node index in the server folder
 then create a new terminal 
-and do npm run dev in the call-tracker-app-folder
+and do npm run dev in the call-tracker-app folder
