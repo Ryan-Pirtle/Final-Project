@@ -69,6 +69,38 @@ function CrewsPage() {
     }
   };
 
+  const handleExportToCSV = () => {
+    if (!crews || crews.length === 0) {
+      alert("No crews available to export.");
+      return;
+    }
+
+    // Convert JSON data to CSV format
+    const headers = Object.keys(crews[0]).join(','); // Get column headers
+    const rows = crews
+      .map((crew) =>
+        Object.values(crew)
+          .map((value) => `"${value}"`) // Escape values for CSV
+          .join(',')
+      )
+      .join('\n'); // Join rows with a newline
+
+    const csvContent = `${headers}\n${rows}`; // Combine headers and rows
+
+    // Create a downloadable Blob
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+
+    // Create a download link and click it programmatically
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', 'crews_data.csv');
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link); // Clean up DOM
+    URL.revokeObjectURL(url); // Free up memory
+  };
+
   const openModal = (crew = null) => {
     setEditCrewData(crew);
     setNewCrew(crew || { crew_name: "", crew_contact: "" });
@@ -88,6 +120,9 @@ function CrewsPage() {
       
       <div className="action-buttons">
         <button onClick={() => openModal()}>Add New Crew</button>
+        <button onClick={handleExportToCSV} style={{ marginLeft: "10px" }}>
+          Export to CSV
+        </button>
       </div>
 
       {errorMessage && <p className="error-message">{errorMessage}</p>}

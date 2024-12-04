@@ -108,6 +108,11 @@ body {
   button.edit:hover {
     background-color: #ec971f;
   }
+
+  button.export-to-csv{
+    background-color: #007bff;
+    color: white;
+  }
   
   button.delete {
     background-color: #d9534f;

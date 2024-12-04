@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import './LoginPage.css'; // Import the CSS file
+import logo from './assets/jpeclogo.png';
+
 
 function LoginPage() {
   const [token, setToken] = useState(localStorage.getItem('token') || null);
@@ -39,7 +41,7 @@ function LoginPage() {
       <div className="login-container">
       <div className="logo-container">
           <img
-            src="./assets/jpeclog.png" // Path from the public folder
+            src={logo} // Path from the public folder
             alt="Jackson Purchase Energy Company Logo"
             className="jp-energy-logo"
           />

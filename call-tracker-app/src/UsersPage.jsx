@@ -56,6 +56,38 @@ function UsersPage() {
     setIsModalOpen(true); // Open modal with pre-filled data
   };
 
+  const handleExportToCSV = () => {
+    if (!data || !data.length) {
+      alert('No data available to export.');
+      return;
+    }
+
+    // Convert JSON data to CSV format
+    const headers = Object.keys(data[0]).join(','); // Get column headers
+    const rows = data
+      .map((row) =>
+        Object.values(row)
+          .map((value) => `"${value}"`) // Escape values for CSV
+          .join(',')
+      )
+      .join('\n'); // Join rows with a newline
+
+    const csvContent = `${headers}\n${rows}`; // Combine headers and rows
+
+    // Create a downloadable Blob
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+
+    // Create a download link and click it programmatically
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', 'users_data.csv');
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link); // Clean up DOM
+    URL.revokeObjectURL(url); // Free up memory
+  };
+
   return (
     <div className="container">
       <Navigation />
@@ -73,7 +105,22 @@ function UsersPage() {
         </select>
       </div>
 
-      <button className="add-user" onClick={() => setIsModalOpen(true)}>Add New User</button>
+      <div className="button-container">
+        <button
+          style={{ marginBottom: '10px' }}
+          className="add-user"
+          onClick={() => setIsModalOpen(true)}
+        >
+          Add New User
+        </button>
+        <button
+          style={{ marginLeft: '10px', marginBottom: '10px' }}
+          className="export-to-csv"
+          onClick={handleExportToCSV}
+        >
+          Export to CSV
+        </button>
+      </div>
 
       {errorMessage && <p className="error-message">{errorMessage}</p>}
 
@@ -96,8 +143,15 @@ function UsersPage() {
                 <td>{item.email}</td>
                 <td>{item.role}</td>
                 <td>
-                  <button className="edit" onClick={() => handleEditUser(item)}>Edit</button>
-                  <button className="delete" onClick={() => handleDeleteUser(item.id)}>Delete</button>
+                  <button className="edit" onClick={() => handleEditUser(item)}>
+                    Edit
+                  </button>
+                  <button
+                    className="delete"
+                    onClick={() => handleDeleteUser(item.id)}
+                  >
+                    Delete
+                  </button>
                 </td>
               </tr>
             ))}
