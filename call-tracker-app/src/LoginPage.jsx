@@ -32,7 +32,6 @@ function LoginPage() {
   };
 
   const goToCallsPage = () => {
-    console.log("test");
     navigate('./CallsPage');
   };
 

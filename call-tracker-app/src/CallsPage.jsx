@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import AddCallModal from './components/AddCallModal';
 import Navigation from './components/Navigation';
-import "./CallsPage.css";
+import './CallsPage.css';
 
 function CallsPage() {
   const [data, setData] = useState(null);
@@ -35,17 +35,37 @@ function CallsPage() {
 
   const fetchFilteredData = async () => {
     try {
+      let response;
       const filters = { callType, startTime, endTime };
+
+      // Default endTime to current datetime if startTime is set but endTime is undefined
       if (filters.startTime && !filters.endTime) {
-        filters.endTime = new Date().toISOString().replace('T', ' ').split('.')[0];
+        const now = new Date();
+        filters.endTime = now.toISOString().replace('T', ' ').split('.')[0];
       }
 
-      const endpoint = filters.callType !== "none" 
-        ? `/api/calls-by-type-and-time?callType=${filters.callType}&time_dispatched=${filters.startTime}&time_completed=${filters.endTime}` 
-        : '/api/calls';
-      const response = await axios.get(endpoint, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      if (filters.callType === 'none' && !filters.startTime && !filters.endTime) {
+        response = await axios.get('/api/calls', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+      } else if (filters.callType !== 'none' && !filters.startTime && !filters.endTime) {
+        response = await axios.get(`/api/calls-by-type?callType=${filters.callType}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+      } else if (filters.callType === 'none' && filters.startTime && filters.endTime) {
+        response = await axios.get(`/api/calls-by-time?time_dispatched=${filters.startTime}&time_completed=${filters.endTime}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+      } else if (filters.callType !== 'none' && filters.startTime && filters.endTime) {
+        response = await axios.get(
+          `/api/calls-by-type-and-time?callType=${filters.callType}&time_dispatched=${filters.startTime}&time_completed=${filters.endTime}`,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+      } else {
+        setErrorMessage('Invalid filter combination.');
+        return;
+      }
+
       setData(response.data.data);
       setErrorMessage(null);
     } catch (error) {
@@ -113,22 +133,27 @@ function CallsPage() {
       {errorMessage && <p className="error-message">{errorMessage}</p>}
 
       <div className="filter-container">
-        <label>Call Type:
+        <label>
+          Call Type:
           <select value={callType} onChange={(e) => setCallType(e.target.value)}>
             <option value="none">All</option>
             {allCallTypes.map((type, index) => (
-              <option key={index} value={type}>{type}</option>
+              <option key={index} value={type}>
+                {type}
+              </option>
             ))}
           </select>
         </label>
-        <label>Start Time:
+        <label>
+          Start Time:
           <input
             type="datetime-local"
             value={startTime}
             onChange={(e) => setStartTime(convertToSQLiteDateTime(e.target.value))}
           />
         </label>
-        <label>End Time:
+        <label>
+          End Time:
           <input
             type="datetime-local"
             value={endTime}
@@ -160,8 +185,12 @@ function CallsPage() {
                 <td>{item.crew_assigned}</td>
                 <td>{item.time_called}</td>
                 <td>
-                  <button className="edit" onClick={() => openModal(item)}>Edit</button>
-                  <button className="delete" onClick={() => handleDeleteCall(item.id)}>Delete</button>
+                  <button className="edit" onClick={() => openModal(item)}>
+                    Edit
+                  </button>
+                  <button className="delete" onClick={() => handleDeleteCall(item.id)}>
+                    Delete
+                  </button>
                 </td>
               </tr>
             ))}
@@ -174,7 +203,7 @@ function CallsPage() {
       {isModalOpen && (
         <div className="modal">
           <div className="modal-content">
-            <h2>{editCallData ? "Edit Call" : "Add New Call"}</h2>
+            <h2>{editCallData ? 'Edit Call' : 'Add New Call'}</h2>
             <AddCallModal
               isOpen={isModalOpen}
               onClose={closeModal}
@@ -189,3 +218,4 @@ function CallsPage() {
 }
 
 export default CallsPage;
+  
