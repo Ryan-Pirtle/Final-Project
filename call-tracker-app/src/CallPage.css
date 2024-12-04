@@ -1,0 +1,117 @@
+/* General Container */
+.call-page-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    font-family: 'Arial', sans-serif;
+    background-color: #f8f9fa;
+  }
+  
+  h1 {
+    text-align: center;
+    font-size: 2rem;
+    color: #343a40;
+    margin-bottom: 30px;
+  }
+  
+  /* Filters Section */
+  .filters {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-bottom: 30px;
+  }
+  
+  .filters select,
+  .filters input {
+    padding: 10px;
+    font-size: 1rem;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+  }
+  
+  .filters button {
+    padding: 10px 20px;
+    font-size: 1rem;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .filters button:hover {
+    background-color: #0056b3;
+  }
+  
+  /* Loading & Error States */
+  .loading {
+    text-align: center;
+    font-size: 1.2rem;
+    color: #007bff;
+  }
+  
+  .error {
+    text-align: center;
+    font-size: 1.2rem;
+    color: #d9534f;
+  }
+  
+  /* Table Styling */
+  .call-table-container {
+    margin-top: 40px;
+    overflow-x: auto;
+  }
+  
+  .call-table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+  }
+  
+  .call-table th, .call-table td {
+    padding: 12px;
+    text-align: left;
+    font-size: 1rem;
+    border: 1px solid #ddd;
+  }
+  
+  .call-table th {
+    background-color: #007bff;
+    color: white;
+  }
+  
+  .call-table tr:nth-child(even) {
+    background-color: #f2f2f2;
+  }
+  
+  .call-table tr:hover {
+    background-color: #ddd;
+  }
+  
+  /* Action Buttons */
+  .action-btn {
+    padding: 8px 12px;
+    font-size: 0.9rem;
+    color: white;
+    background-color: #28a745;
+    border: none;
+    border-radius: 5px;
+    margin-right: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .action-btn:hover {
+    background-color: #218838;
+  }
+  
+  .action-btn:last-child {
+    background-color: #dc3545;
+  }
+  
+  .action-btn:last-child:hover {
+    background-color: #c82333;
+  }
+  
