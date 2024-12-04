@@ -1,112 +1,68 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import './LoginPage.css'; // Import the CSS file
+import logo from './assets/jpeclogo.png';
+
 
 function LoginPage() {
   const [token, setToken] = useState(localStorage.getItem('token') || null);
-  const [userDetails, setUserDetails] = useState(null);
-  const [data, setOtherData] = useState(null);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState(null);
 
+  const navigate = useNavigate();
+
   useEffect(() => {
-    const loginAndFetchData = async () => {
-      if (!token) {
-        try {
-          // Login API Request
-          const loginResponse = await axios.post('http://localhost:5000/api/login', {
-            email: "rpirdsaftle@jpec.org",
-            password: "password",
-          });
-          const fetchedToken = loginResponse.data.token;
-          setToken(fetchedToken);
-          localStorage.setItem('token', fetchedToken);
-
-          // Subsequent API Requests (Only if login is successful)
-          const userDetailsResponse = await axios.get('http://localhost:5000/api/protected', {
-            headers: { Authorization: `Bearer ${fetchedToken}` },
-          });
-          console.log(userDetailsResponse);
-          setUserDetails(userDetailsResponse.message);
-          if(data==null){
-            const otherDataResponse = await axios.get('http://localhost:5000/api/calls', {
-              headers: { Authorization: `Bearer ${fetchedToken}` },
-            });
-            console.log("Calls data ", otherDataResponse)
-            console.log("Calls data.data ", otherDataResponse.data.data)
-            setOtherData(otherDataResponse.data.data);
-          }
-          
-        } catch (error) {
-          setErrorMessage('Failed to log in or fetch data.');
-          console.error('Error:', error.response?.data || error.message);
-        }
-      }
-    };
-
-    loginAndFetchData();
+    if (!token) setErrorMessage('Please log in.');
   }, [token]);
 
-  const fetchCallData = async () => {
-    if (token) {
-      try {
-        const otherDataResponse = await axios.get('http://localhost:5000/api/calls', {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        console.log("Calls data ", otherDataResponse);
-        console.log("Calls data.data ", otherDataResponse.data.data);
-        setOtherData(otherDataResponse.data.data);
-      } catch (error) {
-        console.error('Error fetching call data:', error.response?.data || error.message);
-        setErrorMessage('Failed to fetch call data.');
-      }
-    } else {
-      setErrorMessage('You need to log in first.');
+  const handleLogin = async () => {
+    try {
+      const response = await axios.post('http://localhost:5000/api/login', { email, password });
+      const fetchedToken = response.data.token;
+      setToken(fetchedToken);
+      localStorage.setItem('token', fetchedToken);
+      setErrorMessage(null); // Clear any existing error message
+      goToCallsPage();
+    } catch (error) {
+      console.error('Login error:', error.response?.data || error.message);
+      setErrorMessage('Invalid email or password.');
     }
   };
 
+  const goToCallsPage = () => {
+    navigate('./CallsPage');
+  };
+
   return (
-    <div>
-    {token ? <p>Logged in successfully! Token: {token}</p> : <p>Logging in...</p>}
-    <input id= "one" type="text" />
-    <input id= "two" type="text" />
-    <button onClick={fetchCallData}>Fetch Call Data</button>
+    <div className="wrapper">
+      <div className="login-container">
+      <div className="logo-container">
+          <img
+            src={logo} // Path from the public folder
+            alt="Jackson Purchase Energy Company Logo"
+            className="jp-energy-logo"
+          />
+        </div>
+        <h2>Login</h2>
+        <input
+          type="text"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
+        <input
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+        <button onClick={handleLogin}>Login</button>
 
-    <h1>User List</h1>
-      <ul>
-        {/* {otherData.data} */}
-        {/* {userDetails} */}
-        <h1>Call Records</h1>
-        
-      {data && data.length > 0 ? (
-        <table border="1">
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Caller Name</th>
-              <th>Caller Address</th>
-              <th>Call Type</th>
-              <th>Crew Assigned</th>
-            </tr>
-          </thead>
-          <tbody>
-            {data.map((item) => (
-              <tr key={item.id}>
-                <td>{item.id}</td>
-                <td>{item.caller_name}</td>
-                <td>{item.caller_address}</td>
-                <td>{item.call_type}</td>
-                <td>{item.crew_assigned}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      ) : (
-        <p>No data available.</p>
-      )}
-      </ul>
+        {errorMessage && <p className="error-message">{errorMessage}</p>}
+      </div>
     </div>
-    
-
-    
   );
 }
 

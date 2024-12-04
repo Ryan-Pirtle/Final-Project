@@ -26,13 +26,8 @@ class TokenAuthentication {
             id: user.id, // User ID
             role: user.role // User Role
         };
-
-        const options = {
-            expiresIn: '1h', // Token expiration time
-        };
-
         // Sign and return the token
-        return jwt.sign(payload, TokenAuthentication.JWT_SECRET, options);
+        return jwt.sign(payload, TokenAuthentication.JWT_SECRET);
     }
 }
 

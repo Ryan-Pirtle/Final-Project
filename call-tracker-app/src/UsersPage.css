@@ -1,0 +1,133 @@
+/* General Page Layout */
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f9;
+    color: #333;
+    line-height: 1.6;
+  }
+  
+  .container {
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 20px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Heading */
+  h1 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #444;
+  }
+  
+  /* Role Filter */
+  .filter-container {
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .filter-container label {
+    margin-right: 10px;
+    font-weight: bold;
+  }
+  
+  .filter-container select {
+    padding: 8px 12px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+  }
+  
+  /* Table Styling */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+  }
+  
+  table th,
+  table td {
+    padding: 12px;
+    text-align: left;
+    border: 1px solid #ddd;
+  }
+  
+  table th {
+    background-color: #f7f7f7;
+    color: #555;
+    font-weight: bold;
+  }
+  
+  table tbody tr:nth-child(even) {
+    background-color: #f9f9f9;
+  }
+  
+  table tbody tr:hover {
+    background-color: #f1f1f1;
+  }
+  
+  /* Buttons */
+  button {
+    padding: 8px 12px;
+    margin: 0 5px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+  }
+  
+  button:hover {
+    opacity: 0.9;
+  }
+  
+  button:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+  
+  /* Add/Edit User Button */
+  button.add-user {
+    background-color: #007bff;
+    color: white;
+  }
+  
+  button.add-user:hover {
+    background-color: #0056b3;
+  }
+  
+  /* Action Buttons */
+  button.edit {
+    background-color: #f0ad4e;
+    color: white;
+  }
+  
+  button.edit:hover {
+    background-color: #ec971f;
+  }
+
+  button.export-to-csv{
+    background-color: #007bff;
+    color: white;
+  }
+  
+  button.delete {
+    background-color: #d9534f;
+    color: white;
+  }
+  
+  button.delete:hover {
+    background-color: #c9302c;
+  }
+  
+  /* Error Message */
+  .error-message {
+    color: red;
+    font-size: 14px;
+    margin: 10px 0;
+    text-align: center;
+  }
+  
