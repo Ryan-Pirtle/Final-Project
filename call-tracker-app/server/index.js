@@ -3,6 +3,12 @@ const app = express();
 const sqlite3 = require('sqlite3').verbose();
 const cors = require('cors');
 const db = require('./db');
+<<<<<<< HEAD
+=======
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
+const TokenAuthentication = require('./TokenAuthentication');
+>>>>>>> 9dbcdd982fc0a14f805b0b4c63ac2a3b283272cf
 // Other Routes
 const authenticationRoutes = require('./authentication')
 
@@ -49,7 +55,7 @@ app.get('/api/calls-by-type-and-time', (req, res) => {
     const sql = `
         SELECT * FROM Calls
         WHERE call_type = ?
-        AND time_dispatched BETWEEN ? AND ?
+        AND time_called BETWEEN ? AND ?
     `;
 
     const params = [callType, time_dispatched, time_completed];
@@ -66,11 +72,12 @@ app.get('/api/calls-by-type-and-time', (req, res) => {
 //get call by time
 app.get('/api/calls-by-time', (req, res) => {
   const { time_dispatched, time_completed } = req.query;
+  console.log("Received time range:", time_dispatched, time_completed);
 
   // SQL query to select calls by date range
   const sql = `
       SELECT * FROM Calls
-      WHERE time_dispatched BETWEEN ? AND ?
+      WHERE time_called BETWEEN ? AND ?
   `;
   const params = [time_dispatched, time_completed];
 
@@ -193,8 +200,10 @@ app.put('/api/calls/:id', (req, res) => {
 app.post('/api/users', (req, res) => {
     const { name, email, password, role } = req.body;
     const sql = `INSERT INTO Users (name, email, password, role) VALUES (?, ?, ?, ?)`;
-    const params = [name, email, password, role];
+    const epassword = bcrypt.hash(password, 10);
+    const params = [name, email, epassword, role];
     
+
     db.run(sql, params, function (err) {
       if (err) {
         res.status(400).json({ error: err.message });
@@ -203,14 +212,30 @@ app.post('/api/users', (req, res) => {
       res.status(201).json({ id: this.lastID });
     });
   });
-  
+
   // Get all users
-  app.get('/api/users', (req, res) => {
+  app.get('/api/users', TokenAuthentication.authenticateToken, (req, res) => {
     db.all('SELECT * FROM Users', [], (err, rows) => {
       if (err) {
         res.status(400).json({ error: err.message });
         return;
       }
+      res.json({ data: rows });
+    });
+  });
+
+  // Get Users by Role
+  app.get('/api/users-role', TokenAuthentication.authenticateToken, (req, res) => {
+    const {role} = req.query;
+    console.log("role received ", role)
+    const sql = 'Select * FROM Users WHERE role = ?';
+    const params = [role]
+    db.all(sql, params, (err, rows) => {
+      if (err) {
+        res.status(400).json({ error: err.message });
+        return;
+      }
+      console.log("Data gotten by get users by role ", rows)
       res.json({ data: rows });
     });
   });
@@ -229,11 +254,22 @@ app.post('/api/users', (req, res) => {
   });
   
   // Update a user by ID
+<<<<<<< HEAD
   app.put('/api/users/:id', (req, res) => {
+=======
+  app.put('/api/users/:id', TokenAuthentication.authenticateToken, async (req, res) => {
+    if(req.user.role != 'manager'){
+      return res.status(400).json({message: "Only managers can create new users"})
+  }
+>>>>>>> 9dbcdd982fc0a14f805b0b4c63ac2a3b283272cf
     const { name, email, password, role } = req.body;
+
     const sql = `UPDATE Users SET name = ?, email = ?, password = ?, role = ? WHERE id = ?`;
-    const params = [name, email, password, role, req.params.id];
-  
+
+    const newpassword = await bcrypt.hash(password, 10);
+
+    const params = [name, email, newpassword, role, req.params.id];
+    console.log("req in update user by id", req);
     db.run(sql, params, function (err) {
       if (err) {
         res.status(400).json({ error: err.message });
